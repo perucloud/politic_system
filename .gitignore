@@ -1,0 +1,13 @@
+includes/config/mail.local.php
+includes/config/db.local.php
+.allow-install
+
+# Logs
+*.log
+php-server-*.log
+
+# Config local de Claude Code
+.claude/
+
+# PHP config local
+.user.ini

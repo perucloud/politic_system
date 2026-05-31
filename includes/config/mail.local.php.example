@@ -1,0 +1,10 @@
+<?php
+return [
+    'host' => 'sistemaonline.net.pe',
+    'port' => 465,
+    'secure' => 'ssl',
+    'user' => 'pruebacorreo@sistemaonline.net.pe',
+    'pass' => 'CAMBIAR_POR_PASSWORD_REAL',
+    'from' => 'pruebacorreo@sistemaonline.net.pe',
+    'from_name' => 'Joyer Bastidas',
+];

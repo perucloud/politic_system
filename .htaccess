@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Forzar HTTPS solo en produccion (excluye localhost y .test)
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP_HOST} !^(localhost|.*\.test)$ [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Bloquear acceso a archivos sensibles
+<FilesMatch "(mail\.local\.php|db\.local\.php|\.allow-install|\.env|\.gitignore)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

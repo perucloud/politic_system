@@ -1,0 +1,43 @@
+{
+  "name": "Joyer Bastidas — Panel Admin",
+  "short_name": "JB Admin",
+  "description": "Panel de administración de la campaña de Joyer Bastidas",
+  "start_url": "/admin/dashboard.php",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0F2057",
+  "theme_color": "#1E3A8A",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/assets/img/logos/logorp.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/logos/logo_renovacion_popular.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/admin/dashboard.php",
+      "description": "Ir al dashboard principal"
+    },
+    {
+      "name": "Noticias",
+      "url": "/admin/noticias.php",
+      "description": "Gestionar noticias"
+    },
+    {
+      "name": "Candidatos",
+      "url": "/admin/candidatos-distritales.php",
+      "description": "Gestionar candidatos distritales"
+    }
+  ]
+}

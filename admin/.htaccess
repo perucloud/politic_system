@@ -1,0 +1,14 @@
+# ============================================================
+# admin/.htaccess — Seguridad del panel administrativo
+# ============================================================
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Redirigir acceso directo a /admin/ → login
+DirectoryIndex login.php
+
+# Proteger archivos internos de acceso directo
+<FilesMatch "^(layout\.php|layout|install\.sql)$">
+    Require all denied
+</FilesMatch>

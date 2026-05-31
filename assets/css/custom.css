@@ -1,0 +1,116 @@
+/* ============================================================
+   CUSTOM.CSS — Portal Joyer Bastidas Casas
+   Complementa Tailwind CSS
+   ============================================================ */
+
+/* Scroll suave global */
+html { scroll-behavior: smooth; }
+
+/* Reservar espacio del navbar fijo */
+body { padding-top: 0; }
+
+/* Truncar texto a 2 líneas */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Swiper personalización ───────────────────────────── */
+.swiper-pagination-bullet {
+  background: #1E3A8A !important;
+  opacity: 0.3;
+}
+.swiper-pagination-bullet-active {
+  background: #1E3A8A !important;
+  opacity: 1;
+}
+
+/* ── Navbar activa en scroll ──────────────────────────── */
+nav.scrolled {
+  box-shadow: 0 4px 24px rgba(30, 58, 138, 0.12);
+}
+
+/* ── Hero parallax suave ──────────────────────────────── */
+.hero-bg {
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+@media (max-width: 768px) {
+  .hero-bg {
+    background-attachment: scroll;
+  }
+}
+
+/* ── Cards plan hover ─────────────────────────────────── */
+.card-eje {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-eje:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(30, 58, 138, 0.12);
+}
+
+/* ── Botones CTA focus visible ────────────────────────── */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #FACC15;
+  outline-offset: 3px;
+}
+
+/* ── Inputs formulario focus ──────────────────────────── */
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.4);
+}
+
+/* ── Footer links ─────────────────────────────────────── */
+footer a { transition: color 0.2s ease; }
+
+/* ── Animación fade para alertas ─────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#unete-msg { animation: fadeIn 0.3s ease; }
+
+/* ── Mobile menu transición ──────────────────────────── */
+[x-cloak] { display: none !important; }
+
+/* ── Float keyframe global ───────────────────────────── */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-18px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+/* ── Spin lento ──────────────────────────────────────── */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+
+/* ── Hero wave ───────────────────────────────────────── */
+.wave svg path { fill: white; }
+
+/* ── Glassmorphism helper ────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ── Gradient text ───────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(90deg, #0039A6, #0EA5E9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Swiper candidatos: tamaño uniforme ──────────────── */
+.candidatos-swiper .swiper-slide { height: auto; }
+.cand-card { height: 100%; display: flex; flex-direction: column; }
+.cand-card > div:last-child { flex: 1; }

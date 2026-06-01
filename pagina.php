@@ -58,6 +58,13 @@ if (!preg_match('/<[a-z][\s\S]*>/i', $contenido_html)) {
   <meta property="og:title"       content="<?= htmlspecialchars($seo_title) ?>">
   <meta property="og:description" content="<?= htmlspecialchars($seo_desc) ?>">
   <meta property="og:type"        content="website">
+  <?php
+  $fv_pag = '';
+  try { $fv_pag = $pdo->query("SELECT valor FROM configuracion WHERE clave='site_favicon' LIMIT 1")->fetchColumn() ?: ''; } catch(Exception $e){}
+  $fv_pag_url = (str_starts_with($fv_pag,'/') ? BASE_URL : '') . ($fv_pag ?: '/assets/img/logos/logorp.webp');
+  ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_pag_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_pag_url) ?>">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>

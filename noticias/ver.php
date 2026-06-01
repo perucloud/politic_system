@@ -77,6 +77,12 @@ $fecha_fmt = date('d', $ts_not) . ' ' . ($meses[(int)date('n', $ts_not)] ?? '') 
   <title><?= htmlspecialchars($seo_title) ?> — Ivan Cisneros</title>
   <meta name="description" content="<?= htmlspecialchars($seo_desc) ?>">
   <?php if ($seo_kw): ?><meta name="keywords" content="<?= htmlspecialchars($seo_kw) ?>"><?php endif; ?>
+  <?php
+  $fv_v=''; try{$fv_v=$pdo->query("SELECT valor FROM configuracion WHERE clave='site_favicon' LIMIT 1")->fetchColumn()?:'';}catch(Exception $e){}
+  $fv_v_url=(str_starts_with($fv_v,'/')?BASE_URL:'').($fv_v?:'/assets/img/logos/logorp.webp');
+  ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_v_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_v_url) ?>">
 
   <!-- Open Graph -->
   <meta property="og:type"        content="article">

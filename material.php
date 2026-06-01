@@ -85,6 +85,9 @@ if (!$page_activa) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Material Publicitario - <?= htmlspecialchars(cfg_value($cfg_camp,'site_header_signature','Ivan Cisneros')) ?></title>
+  <?php $fv=cfg_value($cfg_camp,'site_favicon','/assets/img/logos/logorp.webp'); $fv_url=(str_starts_with($fv,'/')?BASE_URL:'').$fv; ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_url) ?>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{}}}</script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

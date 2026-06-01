@@ -27,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (in_array($ext, $allow) && $_FILES['imagen']['size'] > 0) {
                 $webp_h = img_to_webp($_FILES['imagen']['tmp_name'], $ext);
                 if ($webp_h !== false) {
-                    @file_put_contents(__DIR__ . '/../assets/img/candidato/joyer-bastidas.webp', $webp_h);
+                    @file_put_contents(__DIR__ . '/../assets/img/candidato/ivancisneros.webp', $webp_h);
                 } else {
                     $contenido = @file_get_contents($_FILES['imagen']['tmp_name']);
                     if ($contenido !== false && strlen($contenido) > 0) {
-                        @file_put_contents(__DIR__ . '/../assets/img/candidato/joyer-bastidas.' . $ext, $contenido);
+                        @file_put_contents(__DIR__ . '/../assets/img/candidato/ivancisneros.' . $ext, $contenido);
                     }
                 }
             }
@@ -98,7 +98,7 @@ $val = fn($k) => htmlspecialchars($config[$k] ?? '');
   <div>
     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Foto del candidato (PNG/JPG)</label>
     <div class="flex items-center gap-4">
-      <img src="<?= BASE_URL ?>/assets/img/candidato/joyer-bastidas-2.webp"
+      <img src="<?= BASE_URL ?>/assets/img/candidato/ivancisneros-2.webp"
            alt="Candidato" class="w-16 h-16 rounded-xl object-cover border"
            onerror="this.style.display='none'">
       <input type="file" name="imagen" accept="image/*"

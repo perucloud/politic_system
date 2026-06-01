@@ -39,9 +39,9 @@ $index_hero_stats = cfg_json($cfg_camp, 'index_hero_stats', [
     ['n'=>'4','l'=>'Anos de gestion'],
     ['n'=>'8','l'=>'Ejes de trabajo'],
 ]);
-$index_hero_img = cfg_value($cfg_camp, 'index_hero_img', '/assets/img/candidato/joyerd.webp');
-$index_hero_profile_img = cfg_value($cfg_camp, 'index_hero_profile_img', '/assets/img/candidato/joyer-bastidas-2.webp');
-$index_hero_fallback_img = cfg_value($cfg_camp, 'index_hero_fallback_img', '/assets/img/candidato/joyerd.webp');
+$index_hero_img = cfg_value($cfg_camp, 'index_hero_img', '/assets/img/candidato/ivancisneros.webp');
+$index_hero_profile_img = cfg_value($cfg_camp, 'index_hero_profile_img', '/assets/img/candidato/ivancisneros-perfil.webp');
+$index_hero_fallback_img = cfg_value($cfg_camp, 'index_hero_fallback_img', '/assets/img/candidato/ivancisneros.webp');
 $index_hero_party_img = cfg_value($cfg_camp, 'index_hero_party_img', '/assets/img/candidato/r.webp');
 $index_hero2_bg_img = cfg_value($cfg_camp, 'index_hero2_bg_img', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80');
 $index_hero2_pillars = cfg_json($cfg_camp, 'index_hero2_pillars', [
@@ -62,7 +62,7 @@ $index_work_axes = array_slice(array_values(array_filter(
 )), 0, 6);
 $news_url = site_url(cfg_value($cfg_camp, 'index_news_button_url', '/noticias/index.php'));
 $index_social_enabled = cfg_value($cfg_camp, 'index_social_enabled', '1') === '1';
-$index_social_image = cfg_value($cfg_camp, 'index_social_image', '/assets/img/candidato/joyerd.webp');
+$index_social_image = cfg_value($cfg_camp, 'index_social_image', '/assets/img/candidato/ivancisneros.webp');
 
 // Contador regresivo
 $countdown_active = cfg_value($cfg_camp, 'countdown_active', '1') === '1';
@@ -160,6 +160,12 @@ function facebook_page_plugin_src(string $page_url, int $height): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lic. Ivan Cisneros - Candidato Alcalde Provincial de Satipo</title>
   <meta name="description" content="Portal oficial de campana del Lic. Ivan Cisneros, <?= htmlspecialchars($cfg_camp['partido_nombre'] ?? 'ALIANZA PARA EL PROGRESO') ?> - Alcaldia Provincial de Satipo 2026.">
+  <?php
+  $fv = cfg_value($cfg_camp, 'site_favicon', '/assets/img/logos/logorp.webp');
+  $fv_url = (str_starts_with($fv, '/') ? BASE_URL : '') . $fv;
+  ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_url) ?>">
 
   <?php require_once __DIR__ . '/includes/helpers/colors.php'; echo render_color_vars($cfg_camp); ?>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -550,8 +556,8 @@ function facebook_page_plugin_src(string $page_url, int $height): string {
           <div class="hidden lg:block">
             <h1 class="text-4xl sm:text-6xl xl:text-7xl font-black text-white leading-[1.0] mb-3 sm:mb-5">
               <span><?= htmlspecialchars(cfg_value($cfg_camp, 'index_hero_title_line1', 'ING.')) ?><br></span>
-              <span class="text-[#38BDF8]"><?= htmlspecialchars(cfg_value($cfg_camp, 'index_hero_title_line2', 'JOYER')) ?></span><br>
-              <span class="text-white"><?= htmlspecialchars(cfg_value($cfg_camp, 'index_hero_title_line3', 'BASTIDAS')) ?></span>
+              <span class="text-[#38BDF8]"><?= htmlspecialchars(cfg_value($cfg_camp, 'index_hero_title_line2', 'IVAN')) ?></span><br>
+              <span class="text-white"><?= htmlspecialchars(cfg_value($cfg_camp, 'index_hero_title_line3', 'CISNEROS')) ?></span>
             </h1>
             <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
               <div class="h-1 w-8 sm:w-12 bg-[#FACC15] rounded-full flex-shrink-0"></div>
@@ -1065,7 +1071,7 @@ function facebook_page_plugin_src(string $page_url, int $height): string {
               <img src="<?= htmlspecialchars(site_url($index_social_image)) ?>"
                    alt="<?= htmlspecialchars(cfg_value($cfg_camp, 'index_social_image_alt', 'Ivan Cisneros por Satipo')) ?>"
                    class="w-full h-[260px] sm:h-[380px] lg:h-[440px] object-cover object-center"
-                   onerror="this.src='<?= htmlspecialchars(site_url('/assets/img/candidato/joyerd.webp')) ?>'">
+                   onerror="this.src='<?= htmlspecialchars(site_url('/assets/img/candidato/ivancisneros.webp')) ?>'">
               <a href="<?= htmlspecialchars(site_url(cfg_value($cfg_camp, 'index_social_button_url', $index_social_facebook_url))) ?>"
                  target="_blank" rel="noopener"
                  class="absolute left-5 bottom-5 inline-flex items-center gap-3 bg-[#0484C7] hover:bg-[#036CA3] text-white font-black px-5 sm:px-6 py-3 rounded-xl shadow-lg transition-all hover:-translate-y-0.5">

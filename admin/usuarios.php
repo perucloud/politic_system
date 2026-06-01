@@ -227,25 +227,54 @@ $msg_key = $_GET['msg'] ?? '';
           </td>
           <!-- Acciones -->
           <td class="px-4 py-3">
-            <div class="flex items-center justify-center gap-2 flex-wrap">
-              <!-- Editar -->
-              <a href="usuario-form.php?id=<?= (int)$u['id'] ?>"
-                 class="inline-flex items-center gap-1 text-xs font-semibold text-[#1E3A8A] hover:text-blue-900 hover:underline transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Editar
-              </a>
+            <div class="flex items-center justify-center gap-1.5 flex-wrap">
 
-              <!-- Toggle activo -->
+              <!-- Editar / Mi cuenta -->
+              <?php if (!$es_superadmin || $es_yo): ?>
+              <a href="usuario-form.php?id=<?= (int)$u['id'] ?>"
+                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                        bg-blue-50 text-blue-700 border border-blue-200
+                        hover:bg-[#1E3A8A] hover:text-white hover:border-[#1E3A8A]
+                        transition-all duration-150 shadow-sm hover:shadow">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <?= $es_yo ? 'Mi cuenta' : 'Editar' ?>
+              </a>
+              <?php endif; ?>
+
+              <!-- Toggle activo / inactivo -->
               <?php if ($puede_toggle): ?>
               <form method="POST" class="inline">
+                <?= csrf_field() ?>
                 <input type="hidden" name="action" value="toggle">
                 <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
+                <?php if ($u['activo']): ?>
                 <button type="submit"
-                        class="text-xs font-semibold transition-colors <?= $u['activo'] ? 'text-amber-500 hover:text-amber-700' : 'text-green-500 hover:text-green-700' ?>">
-                  <?= $u['activo'] ? 'Desactivar' : 'Activar' ?>
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                               bg-amber-50 text-amber-700 border border-amber-200
+                               hover:bg-amber-500 hover:text-white hover:border-amber-500
+                               transition-all duration-150 shadow-sm hover:shadow">
+                  <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                  </svg>
+                  Desactivar
                 </button>
+                <?php else: ?>
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                               bg-green-50 text-green-700 border border-green-200
+                               hover:bg-green-500 hover:text-white hover:border-green-500
+                               transition-all duration-150 shadow-sm hover:shadow">
+                  <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  Activar
+                </button>
+                <?php endif; ?>
               </form>
               <?php endif; ?>
 
@@ -253,16 +282,25 @@ $msg_key = $_GET['msg'] ?? '';
               <?php if ($puede_delete): ?>
               <form method="POST" class="inline"
                     onsubmit="return confirm('¿Eliminar a <?= htmlspecialchars(addslashes($u['nombre'])) ?>? Esta acción no se puede deshacer.')">
+                <?= csrf_field() ?>
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="id" value="<?= (int)$u['id'] ?>">
                 <button type="submit"
-                        class="text-xs font-semibold text-red-400 hover:text-red-600 transition-colors">
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold
+                               bg-red-50 text-red-600 border border-red-200
+                               hover:bg-red-500 hover:text-white hover:border-red-500
+                               transition-all duration-150 shadow-sm hover:shadow">
+                  <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
                   Eliminar
                 </button>
               </form>
               <?php else: ?>
-              <span class="text-xs text-gray-300">—</span>
+              <span class="text-xs text-gray-300 px-2">—</span>
               <?php endif; ?>
+
             </div>
           </td>
         </tr>

@@ -11,3 +11,17 @@ php-server-*.log
 
 # PHP config local
 .user.ini
+
+# Archivos de deploy y credenciales de produccion
+db.production.php
+deploy.txt
+deploy_clean.txt
+deploy_final.txt
+deploy_fix.txt
+deploy_configs.txt
+explore.txt
+fix_produccion.php
+fix_config.sql
+import_db.php
+ivancisneros_export.sql
+config_dump.txt

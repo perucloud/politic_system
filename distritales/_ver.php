@@ -21,7 +21,7 @@ $dist_cta_name   = cfg_value($_dist_cfg, 'dist_cta_name',   'Ivan Cisneros');
 $dist_cta_text   = cfg_value($_dist_cfg, 'dist_cta_text',   'Juntos trabajamos por el desarrollo integral de toda la provincia de Satipo. Un equipo unido, un solo objetivo.');
 $dist_cta_button = cfg_value($_dist_cfg, 'dist_cta_button', 'Plan Provincial →');
 $dist_cta_url    = cfg_value($_dist_cfg, 'dist_cta_url',    '/plan.php');
-$dist_cta_photo  = cfg_value($_dist_cfg, 'dist_cta_photo',  '/assets/img/candidato/joyer-bastidas-2.webp');
+$dist_cta_photo  = cfg_value($_dist_cfg, 'dist_cta_photo',  '/assets/img/candidato/ivancisneros-perfil.webp');
 
 // ━━ CONSULTA PRINCIPAL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 $db = null;

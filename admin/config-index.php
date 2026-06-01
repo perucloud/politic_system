@@ -52,9 +52,9 @@ try {
 $hero_defaults = [
     'index_hero_badge_letter' => 'R',
     'index_hero_badge_label' => 'ALIANZA PARA EL PROGRESO',
-    'index_hero_title_line1' => 'ING.',
-    'index_hero_title_line2' => 'JOYER',
-    'index_hero_title_line3' => 'BASTIDAS',
+    'index_hero_title_line1' => 'LIC.',
+    'index_hero_title_line2' => 'IVAN',
+    'index_hero_title_line3' => 'CISNEROS',
     'index_hero_kicker' => 'Candidato - Alcalde Provincial',
     'index_hero_location' => 'Satipo, Junin - 2026 - 2030',
     'index_hero_quote' => '"Ha llegado el momento de transformar Satipo"',
@@ -62,9 +62,9 @@ $hero_defaults = [
     'index_hero_primary_url' => '/plan.php',
     'index_hero_secondary_text' => 'Unete al Equipo',
     'index_hero_secondary_url' => '#unete',
-    'index_hero_img' => '/assets/img/candidato/joyerd.webp',
-    'index_hero_profile_img' => '/assets/img/candidato/joyer-bastidas-2.webp',
-    'index_hero_fallback_img' => '/assets/img/candidato/joyerd.webp',
+    'index_hero_img' => '/assets/img/candidato/ivancisneros.webp',
+    'index_hero_profile_img' => '/assets/img/candidato/ivancisneros-perfil.webp',
+    'index_hero_fallback_img' => '/assets/img/candidato/ivancisneros.webp',
     'index_hero_party_img' => '/assets/img/candidato/r.webp',
     'index_hero_float_title' => 'ALCALDE POR SATIPO',
     'index_hero_float_subtitle' => 'Gestion 2026 - 2030',
@@ -151,7 +151,7 @@ $social_defaults = [
     'index_social_eyebrow' => 'Siguenos en nuestras redes sociales',
     'index_social_title' => 'Unete y se parte del cambio',
     'index_social_subtitle' => 'Siguenos en nuestra cuenta oficial de Facebook y enterate de todas nuestras actividades partidarias, juntos por un Satipo progresista.',
-    'index_social_image' => '/assets/img/candidato/joyerd.webp',
+    'index_social_image' => '/assets/img/candidato/ivancisneros.webp',
     'index_social_image_alt' => 'Ivan Cisneros por Satipo',
     'index_social_button_text' => 'Unete a nosotros..!',
     'index_social_button_url' => 'https://www.facebook.com/ivanrogercisnerosquispe',
@@ -178,11 +178,8 @@ $contact_defaults = [
 ];
 
 $hf_defaults = [
-    'partido_nombre'   => 'ALIANZA PARA EL PROGRESO',
     'site_header_logo' => '/assets/img/logos/logorp.webp',
     'site_header_logo_alt' => 'ALIANZA PARA EL PROGRESO',
-    'login_logo' => '/assets/img/logos/logorp.webp',
-    'login_subtitle' => 'Portal Ivan Cisneros',
     'site_header_signature' => 'Ivan Cisneros',
     'site_header_cta_text' => 'Unete al equipo',
     'site_header_cta_url' => '/index.php#unete',
@@ -211,7 +208,7 @@ $hf_defaults = [
     'dist_cta_text'   => 'Juntos trabajamos por el desarrollo integral de toda la provincia de Satipo. Un equipo unido, un solo objetivo.',
     'dist_cta_button' => 'Plan Provincial →',
     'dist_cta_url'    => '/plan.php',
-    'dist_cta_photo'  => '/assets/img/candidato/joyer-bastidas-2.webp',
+    'dist_cta_photo'  => '/assets/img/candidato/ivancisneros-perfil.webp',
 ];
 
 function cfg_parse_stats(array $nums, array $labels, array $fallback): array {
@@ -438,73 +435,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $config = array_merge($config, array_map('strval', $values));
             log_activity($pdo, 'Actualizo configuracion del Index: Contactenos y mapa', 'configuracion_global');
             $flash = 'Contactenos y mapa actualizados correctamente.';
-        } catch (Exception $e) {
-            $flash = 'Error al guardar: ' . $e->getMessage();
-            $flash_type = 'error';
-        }
-    }
-
-    if ($active_tab === 'contador') {
-        // Reset de visitas
-        if (!empty($_POST['reset_visits'])) {
-            try {
-                $pdo->exec("DELETE FROM visitas");
-                log_activity($pdo, 'Reinicio el contador de visitas', 'contador_visitas');
-                $flash = 'Contador de visitas reiniciado a cero.';
-            } catch (Exception $e) {
-                $flash = 'Error al reiniciar: ' . $e->getMessage();
-                $flash_type = 'error';
-            }
-        } else {
-            $cd_active    = isset($_POST['countdown_active'])     ? '1' : '0';
-            $visit_active = isset($_POST['visit_counter_active']) ? '1' : '0';
-            $cd_date      = trim($_POST['countdown_date']  ?? '2026-10-04');
-            $cd_title     = trim($_POST['countdown_title'] ?? 'Faltan para las Elecciones');
-            $cd_label     = trim($_POST['countdown_label'] ?? 'Elecciones Municipales 2026');
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $cd_date)) $cd_date = '2026-10-04';
-            try {
-                cfg_save_values($pdo, [
-                    'countdown_active'     => $cd_active,
-                    'countdown_date'       => $cd_date,
-                    'countdown_title'      => $cd_title,
-                    'countdown_label'      => $cd_label,
-                    'visit_counter_active' => $visit_active,
-                ]);
-                $config = array_merge($config, [
-                    'countdown_active'     => $cd_active,
-                    'countdown_date'       => $cd_date,
-                    'countdown_title'      => $cd_title,
-                    'countdown_label'      => $cd_label,
-                    'visit_counter_active' => $visit_active,
-                ]);
-                log_activity($pdo, 'Actualizo configuracion del contador', 'configuracion_contador');
-                $flash = 'Configuracion guardada correctamente.';
-            } catch (Exception $e) {
-                $flash = 'Error al guardar: ' . $e->getMessage();
-                $flash_type = 'error';
-            }
-        }
-    }
-
-    if ($active_tab === 'colores') {
-        $color_keys = ['color_primary','color_accent',
-                       'color_btn_hero_primary','color_btn_hero_primary_text',
-                       'color_btn_hero_secondary','color_btn_hero_secondary_text',
-                       'color_btn_download','color_btn_download_text',
-                       'color_btn_cta_navbar','color_btn_cta_navbar_text',
-                       'color_btn_join','color_btn_join_text'];
-        $values = [];
-        foreach ($color_keys as $key) {
-            $val = trim($_POST[$key] ?? '');
-            if (preg_match('/^#[0-9A-Fa-f]{3,8}$/', $val)) {
-                $values[$key] = $val;
-            }
-        }
-        try {
-            cfg_save_values($pdo, $values);
-            $config = array_merge($config, $values);
-            log_activity($pdo, 'Actualizo paleta de colores del sitio', 'configuracion_colores');
-            $flash = 'Colores actualizados correctamente.';
         } catch (Exception $e) {
             $flash = 'Error al guardar: ' . $e->getMessage();
             $flash_type = 'error';
@@ -745,11 +675,9 @@ include __DIR__ . '/layout.php';
         'bloques'      => 'Noticias / Unete / Agenda',
         'contacto'     => 'Contactenos / Mapa',
         'header_footer'=> 'Header / Footer',
-        'colores'      => 'Colores',
-        'contador'     => 'Contador',
     ];
     foreach ($tabs as $id => $label):
-      $enabled = in_array($id, ['hero', 'badge', 'hero2', 'bio', 'social', 'bloques', 'contacto', 'header_footer', 'colores', 'contador'], true);
+      $enabled = in_array($id, ['hero', 'badge', 'hero2', 'bio', 'social', 'bloques', 'contacto', 'header_footer'], true);
     ?>
     <button type="button"
             @click="<?= $enabled ? "activeTab='{$id}'" : '' ?>"
@@ -1668,15 +1596,6 @@ include __DIR__ . '/layout.php';
               </div>
             </div>
             <div class="space-y-4">
-              <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                <label class="block text-xs font-black text-yellow-700 uppercase mb-1">
-                  Nombre del Partido / Agrupacion Politica
-                  <span class="ml-1 text-yellow-500 font-normal normal-case">(se aplica en PDFs, candidatos distritales, footer y hero)</span>
-                </label>
-                <input name="partido_nombre"
-                       value="<?= cfg_admin_val($config, $hf_defaults, 'partido_nombre') ?>"
-                       class="w-full border border-yellow-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white">
-              </div>
               <div x-data="{ url: '<?= cfg_admin_val($config, $hf_defaults, 'site_header_logo') ?>' }">
                 <label class="block text-xs font-black text-gray-500 uppercase mb-1">Logo principal</label>
                 <div class="flex gap-2">
@@ -1691,27 +1610,6 @@ include __DIR__ . '/layout.php';
               <div>
                 <label class="block text-xs font-black text-gray-500 uppercase mb-1">Firma / texto cursiva</label>
                 <input name="site_header_signature" value="<?= cfg_admin_val($config, $hf_defaults, 'site_header_signature') ?>" class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm">
-              </div>
-              <div x-data="{ url: '<?= htmlspecialchars(cfg_admin_val($config, $hf_defaults, 'login_logo'), ENT_QUOTES) ?>' }" class="pt-2 border-t border-gray-100">
-                <label class="block text-xs font-black text-gray-500 uppercase mb-1">Logo del panel de acceso (Login)</label>
-                <div class="flex gap-2">
-                  <input name="login_logo" x-model="url" class="min-w-0 flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono">
-                  <button type="button" @click="openMediaPicker((picked)=>{ url = picked }, 'image')" class="px-3 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-100">Media</button>
-                </div>
-                <div class="mt-2 flex items-center gap-3">
-                  <img :src="url.match(/^https?:\/\//) ? url : '<?= BASE_URL ?>/' + url.replace(/^\/+/,'')"
-                       alt="Preview login logo"
-                       class="h-10 w-auto object-contain rounded border border-gray-100 bg-gray-50 p-1"
-                       onerror="this.style.display='none'" style="display:block">
-                  <p class="text-xs text-gray-400">Logo que aparece en la pagina de inicio de sesion del panel.</p>
-                </div>
-              </div>
-              <div class="pt-2">
-                <label class="block text-xs font-black text-gray-500 uppercase mb-1">Subtitulo del login</label>
-                <input name="login_subtitle" value="<?= htmlspecialchars(cfg_admin_val($config, $hf_defaults, 'login_subtitle')) ?>"
-                       class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm"
-                       placeholder="Portal Ivan Cisneros">
-                <p class="text-xs text-gray-400 mt-1">Texto que aparece debajo del logo en la pantalla de login.</p>
               </div>
             </div>
           </div>
@@ -1999,8 +1897,8 @@ include __DIR__ . '/layout.php';
     </div>
   </form>
 
-  <!-- ── TAB COLORES ───────────────────────────────────────────── -->
-  <form method="POST" x-show="activeTab === 'colores'" class="space-y-6">
+  <!-- Colores y Contador movidos a: Configurar → Configurar Página -->
+  <form method="POST" x-show="false" style="display:none!important">
     <input type="hidden" name="tab" value="colores">
 
     <?php
@@ -2245,37 +2143,7 @@ include __DIR__ . '/layout.php';
 </div>
 
 <script>
-  // Preview en vivo de colores
   (function () {
-    const bgMap = {
-      'color_btn_hero_primary':   'prev-hero-primary',
-      'color_btn_hero_secondary': 'prev-hero-secondary',
-      'color_btn_download':       'prev-download',
-      'color_btn_cta_navbar':     'prev-navbar',
-      'color_btn_join':           'prev-join',
-    };
-    const textMap = {
-      'color_btn_hero_primary_text':   'prev-hero-primary',
-      'color_btn_hero_secondary_text': 'prev-hero-secondary',
-      'color_btn_download_text':       'prev-download',
-      'color_btn_cta_navbar_text':     'prev-navbar',
-      'color_btn_join_text':           'prev-join',
-    };
-    Object.entries(bgMap).forEach(([inputName, previewId]) => {
-      const input = document.querySelector(`input[name="${inputName}"]`);
-      const preview = document.getElementById(previewId);
-      if (!input || !preview) return;
-      preview.style.backgroundColor = input.value;
-      input.addEventListener('input', () => { preview.style.backgroundColor = input.value; });
-    });
-    Object.entries(textMap).forEach(([inputName, previewId]) => {
-      const input = document.querySelector(`input[name="${inputName}"]`);
-      const preview = document.getElementById(previewId);
-      if (!input || !preview) return;
-      preview.style.color = input.value;
-      input.addEventListener('input', () => { preview.style.color = input.value; });
-    });
-  })();
 
   // workAxesManager movido a config-plan.php
   function workAxesManager() {

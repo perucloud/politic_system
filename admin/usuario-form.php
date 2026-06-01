@@ -17,13 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$mi_id  = (int)($_SESSION['admin_id'] ?? 0);
 $errors = [];
 $u      = ['id' => null, 'nombre' => '', 'email' => '', 'rol' => 'editor', 'activo' => 1, 'candidato_id' => null];
 
 // Módulos que puede asignar el usuario actual
 $modulos_asignables = is_superadmin()
     ? array_keys(MODULOS_SISTEMA)
-    : get_modulos_usuario((int)($_SESSION['admin_id'] ?? 0), $pdo);
+    : get_modulos_usuario($mi_id, $pdo);
 
 // Módulos actualmente asignados al usuario editado
 $modulos_usuario_editado = [];
@@ -39,6 +40,10 @@ if ($id) {
             if (!is_superadmin() && !in_array($found['rol'], ['editor', 'candidato_distrital'], true)) {
                 header('Location: usuarios.php?msg=error'); exit;
             }
+            // Superadmin solo puede editarse a sí mismo, no a otro superadmin
+            if ($found['rol'] === 'superadmin' && $found['id'] !== $mi_id) {
+                header('Location: usuarios.php?msg=error'); exit;
+            }
             $u          = $found;
             $page_title = 'Editar Usuario';
             $modulos_usuario_editado = get_modulos_usuario($id, $pdo);
@@ -49,6 +54,9 @@ if ($id) {
         header('Location: usuarios.php?msg=error'); exit;
     }
 }
+
+// ── Flag: ¿estamos editando una cuenta superadmin? ────────────
+$editando_superadmin = ($id !== null && $u['rol'] === 'superadmin');
 
 // Admin solo puede crear Editores (no Admins)
 $roles_disponibles = is_superadmin()
@@ -128,8 +136,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Si es superadmin: preservar rol y activo sin cambios
+    if ($editando_superadmin) {
+        $rol    = 'superadmin';
+        $activo = 1;
+    }
+
     // Validación: rol (no se permite asignar superadmin desde la UI)
-    if (!array_key_exists($rol, $roles_disponibles)) {
+    if (!$editando_superadmin && !array_key_exists($rol, $roles_disponibles)) {
         $rol = 'editor';
     }
 
@@ -179,8 +193,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo->prepare("UPDATE usuarios SET nombre=?,email=?,rol=?,activo=?,candidato_id=? WHERE id=?")
                         ->execute([$nombre,$email,$rol,$activo,($rol === 'candidato_distrital' ? $candidato_id : null),$id]);
                 }
-                guardar_modulos_usuario($id, $modulos_seleccionados, $pdo);
-                log_activity($pdo, 'Editó usuario ' . $nombre . ' (módulos: ' . implode(', ', $modulos_seleccionados) . ')', 'usuarios');
+                // SuperAdmin: no se tocan los módulos (acceso implícito por rol)
+                if (!$editando_superadmin) {
+                    guardar_modulos_usuario($id, $modulos_seleccionados, $pdo);
+                }
+                $log_mod = $editando_superadmin ? 'todos (superadmin)' : implode(', ', $modulos_seleccionados);
+                log_activity($pdo, 'Editó usuario ' . $nombre . ' (módulos: ' . $log_mod . ')', 'usuarios');
                 header('Location: usuarios.php?msg=updated'); exit;
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -265,7 +283,25 @@ include __DIR__ . '/layout.php';
       </div>
     </div>
 
+    <!-- Aviso cuando se edita cuenta superadmin -->
+    <?php if ($editando_superadmin): ?>
+    <div class="flex items-start gap-3 bg-purple-50 border border-purple-200 rounded-xl px-4 py-3">
+      <svg class="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+      </svg>
+      <div>
+        <p class="text-sm font-black text-purple-700">Cuenta SuperAdmin</p>
+        <p class="text-xs text-purple-500 mt-0.5">
+          El SuperAdmin tiene acceso completo a todos los módulos del sistema por defecto.
+          Solo puedes modificar tu nombre, correo y contraseña.
+        </p>
+      </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Fila: rol + activo -->
+    <?php if (!$editando_superadmin): ?>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Rol</label>
@@ -321,6 +357,7 @@ include __DIR__ . '/layout.php';
         <?php endforeach; ?>
       </select>
     </div>
+    <?php endif; // !$editando_superadmin ?>
 
     <!-- Contraseña -->
     <div class="border-t border-gray-100 pt-6">
@@ -406,7 +443,7 @@ include __DIR__ . '/layout.php';
     </div>
     <?php endif; ?>
 
-    <?php if (!empty($modulos_asignables)): ?>
+    <?php if (!$editando_superadmin && !empty($modulos_asignables)): ?>
     <div class="border-t border-gray-100 pt-6" x-show="rol !== 'candidato_distrital'">
       <div class="mb-4">
         <h3 class="text-sm font-black text-gray-700 uppercase tracking-wide">Modulos del sistema</h3>

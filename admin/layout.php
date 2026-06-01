@@ -85,6 +85,7 @@ $secciones = [
       ['id'=>'configurar','href'=>'#','icon'=>'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z','label'=>'Configurar','rol'=>'admin','modulo'=>'configuracion_global','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'menu-manager.php',       'label'=>'Menu Web',          'icon'=>'M4 6h16M4 12h16M4 18h16',                                                                                                                                                                                                                                                                                               'rol'=>'admin',      'modulo'=>'menu_web',              'solo_rol'=>null],
+          ['href'=>'config-pagina.php',       'label'=>'Configurar Pagina', 'icon'=>'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
           ['href'=>'config-index.php',        'label'=>'Configurar Index',  'icon'=>'M3 4a1 1 0 011-1h16a1 1 0 011 1v5H3V4zm0 7h8v10H4a1 1 0 01-1-1v-9zm10 10V11h8v9a1 1 0 01-1 1h-7z',                                                                                                                                                                                                                    'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
           ['href'=>'seo.php',                 'label'=>'SEO por Pagina',    'icon'=>'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',                                                                                                                                                                                                                                                                           'rol'=>'admin',      'modulo'=>'seo',                   'solo_rol'=>null],
           ['href'=>'tools/migrate-webp.php',  'label'=>'Migrar a WebP',     'icon'=>'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',                                                                                                                                                          'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
@@ -140,7 +141,17 @@ $flyout_json = json_encode($flyout_data, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="JB Admin">
-  <link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/img/logos/logorp.webp">
+  <?php
+  $favicon_admin = '';
+  try {
+      $fv = $pdo->query("SELECT valor FROM configuracion WHERE clave='site_favicon' LIMIT 1")->fetchColumn();
+      if ($fv) $favicon_admin = $fv;
+  } catch (Exception $e) {}
+  $favicon_href = $favicon_admin ?: '/assets/img/logos/logorp.webp';
+  $favicon_href = (str_starts_with($favicon_href, '/') ? BASE_URL : '') . $favicon_href;
+  ?>
+  <link rel="icon" href="<?= htmlspecialchars($favicon_href) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($favicon_href) ?>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{primary:'#1E3A8A',secondary:'#38BDF8',accent:'#FACC15'}}}}</script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

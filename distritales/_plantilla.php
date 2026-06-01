@@ -235,7 +235,7 @@ try {
   <section class="py-16 bg-[#1E3A8A]">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center" data-aos="fade-up">
       <div class="flex flex-col sm:flex-row items-center gap-6 bg-white/10 backdrop-blur-sm rounded-3xl p-8">
-        <img src="<?= BASE_URL ?>/assets/img/candidato/joyer-bastidas-2.png"
+        <img src="<?= BASE_URL ?>/assets/img/candidato/ivancisneros-perfil.webp"
              alt="Ivan Cisneros"
              class="w-20 h-20 rounded-full border-4 border-[#FACC15] object-cover flex-shrink-0"
              onerror="this.src='https://placehold.co/80x80/FACC15/1E3A8A?text=JB'">

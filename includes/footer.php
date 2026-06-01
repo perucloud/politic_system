@@ -74,6 +74,26 @@ if ($footer_visit_active) {
           <li><a href="<?= BASE_URL ?>/index.php#agenda" class="hover:text-white transition-colors">Agenda</a></li>
           <li><a href="<?= BASE_URL ?>/index.php#unete" class="hover:text-white transition-colors">Unete al equipo</a></li>
         </ul>
+
+        <!-- Intranet — acceso discreto -->
+        <div class="mt-5 pt-4 border-t border-blue-800/60">
+          <a href="<?= BASE_URL ?>/admin/login.php"
+             class="inline-flex items-center gap-2 group
+                    text-gray-500 hover:text-gray-300 transition-all duration-200">
+            <span class="flex items-center justify-center w-6 h-6 rounded-lg
+                         bg-blue-900/60 border border-blue-700/40
+                         group-hover:bg-blue-800 group-hover:border-blue-600
+                         transition-all duration-200">
+              <svg class="w-3 h-3 text-gray-500 group-hover:text-[#38BDF8] transition-colors"
+                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </span>
+            <span class="text-xs font-semibold tracking-wide">Intranet</span>
+          </a>
+          <p class="text-[10px] text-gray-600 mt-1 ml-8">Acceso al panel administrativo</p>
+        </div>
       </div>
 
       <!-- Col 3: Candidatos distritales -->

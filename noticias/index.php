@@ -56,6 +56,12 @@ $meses = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Noticias — Ivan Cisneros · Alcalde Satipo</title>
   <meta name="description" content="Últimas noticias y novedades de la campaña de Ivan Cisneros, candidato a la Alcaldía Provincial de Satipo.">
+  <?php
+  $fv_n=''; try{$fv_n=$pdo->query("SELECT valor FROM configuracion WHERE clave='site_favicon' LIMIT 1")->fetchColumn()?:'';}catch(Exception $e){}
+  $fv_n_url=(str_starts_with($fv_n,'/')?BASE_URL:'').($fv_n?:'/assets/img/logos/logorp.webp');
+  ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_n_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_n_url) ?>">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>

@@ -32,6 +32,9 @@ $plan_pdf_exists = file_exists(__DIR__ . $plan_pdf_rel);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plan de Gobierno 2026-2030 - Ivan Cisneros - Satipo</title>
   <meta name="description" content="Plan de gobierno del Lic. Ivan Cisneros para la Alcaldia Provincial de Satipo 2026-2030.">
+  <?php $fv=cfg_value($cfg_camp,'site_favicon','/assets/img/logos/logorp.webp'); $fv_url=(str_starts_with($fv,'/')?BASE_URL:'').$fv; ?>
+  <link rel="icon" href="<?= htmlspecialchars($fv_url) ?>">
+  <link rel="apple-touch-icon" href="<?= htmlspecialchars($fv_url) ?>">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>

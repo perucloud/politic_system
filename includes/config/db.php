@@ -38,4 +38,9 @@ if (!defined('SKIP_DB_CONNECT')) {
     } catch (PDOException $e) {
         die(json_encode(['error' => 'Error de conexion a la base de datos.']));
     }
+
+    // Migraciones automáticas ligeras (columnas opcionales)
+    try {
+        $pdo->exec("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS remember_token VARCHAR(64) NULL DEFAULT NULL");
+    } catch (Exception $_e) {}
 }

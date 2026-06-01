@@ -188,10 +188,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $maint_message          = trim($_POST['maint_message']          ?? 'Estamos trabajando para mejorar tu experiencia. Volvemos pronto.');
         $maint_eta              = trim($_POST['maint_eta']              ?? '');
         $maint_show_social      = isset($_POST['maint_show_social'])     ? '1' : '0';
-        $maint_logo             = trim($_POST['maint_logo']             ?? '');
-        $maint_countdown_active = isset($_POST['maint_countdown_active']) ? '1' : '0';
-        $maint_launch_date      = trim($_POST['maint_launch_date']      ?? '');
-        $maint_launch_label     = trim($_POST['maint_launch_label']     ?? 'Lanzamiento oficial');
+        $maint_logo              = trim($_POST['maint_logo']              ?? '');
+        $maint_candidate_photo   = trim($_POST['maint_candidate_photo']   ?? '');
+        $maint_countdown_active  = isset($_POST['maint_countdown_active']) ? '1' : '0';
+        $maint_launch_date       = trim($_POST['maint_launch_date']       ?? '');
+        $maint_launch_label      = trim($_POST['maint_launch_label']      ?? 'Lanzamiento oficial');
         if ($maint_launch_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $maint_launch_date)) $maint_launch_date = '';
         try {
             cfg_save_values($pdo, [
@@ -201,6 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'maint_eta'             => $maint_eta,
                 'maint_show_social'     => $maint_show_social,
                 'maint_logo'            => $maint_logo,
+                'maint_candidate_photo' => $maint_candidate_photo,
                 'maint_countdown_active'=> $maint_countdown_active,
                 'maint_launch_date'     => $maint_launch_date,
                 'maint_launch_label'    => $maint_launch_label,
@@ -211,6 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $config['maint_eta']              = $maint_eta;
             $config['maint_show_social']      = $maint_show_social;
             $config['maint_logo']             = $maint_logo;
+            $config['maint_candidate_photo']  = $maint_candidate_photo;
             $config['maint_countdown_active'] = $maint_countdown_active;
             $config['maint_launch_date']      = $maint_launch_date;
             $config['maint_launch_label']     = $maint_launch_label;
@@ -906,6 +909,35 @@ require __DIR__ . '/layout.php';
             <p class="text-white/50 text-xs">Vista previa sobre fondo oscuro</p>
           </div>
           <p class="text-xs text-gray-400 mt-2">Si lo dejas vacío, se usa el logo principal del sitio.</p>
+        </div>
+
+        <!-- Foto del candidato -->
+        <div class="border-t border-gray-100 pt-5" x-data="{ photoUrl: '<?= cpag_val($config, 'maint_candidate_photo', cfg_value($config,'login_hero_img','/assets/img/candidato/ivancisneros.webp')) ?>' }">
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Foto del candidato</label>
+          <p class="text-xs text-gray-400 mb-3">Aparece en el panel izquierdo de la pantalla de mantenimiento (layout 2 columnas en desktop).</p>
+          <div class="flex gap-2 mb-3">
+            <input name="maint_candidate_photo" x-model="photoUrl"
+                   placeholder="/assets/img/candidato/ivancisneros.webp"
+                   class="min-w-0 flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <button type="button"
+                    @click="openMediaPicker((picked) => { photoUrl = picked }, 'image')"
+                    class="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-100 hover:bg-indigo-100 transition-colors flex-shrink-0">
+              Media
+            </button>
+          </div>
+          <div class="rounded-xl overflow-hidden h-40 bg-[#0f2057] relative">
+            <template x-if="photoUrl && photoUrl !== ''">
+              <img :src="photoUrl.match(/^https?:\/\//) ? photoUrl : '<?= BASE_URL ?>/' + photoUrl.replace(/^\/+/,'')"
+                   class="w-full h-full object-cover object-top" alt="Preview candidato">
+            </template>
+            <template x-if="!photoUrl || photoUrl === ''">
+              <div class="w-full h-full flex items-center justify-center">
+                <svg class="w-12 h-12 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>

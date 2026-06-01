@@ -3,37 +3,35 @@ require_once __DIR__ . '/includes/config/db.php';
 require_once __DIR__ . '/includes/helpers/config.php';
 
 $cfg = [];
-try {
-    $cfg = $pdo->query("SELECT clave, valor FROM configuracion")->fetchAll(PDO::FETCH_KEY_PAIR);
-} catch (Exception $e) {}
-
-$title    = cfg_value($cfg, 'maint_title',   'Sitio en Mantenimiento');
-$msg      = cfg_value($cfg, 'maint_message', 'Estamos trabajando para mejorar tu experiencia. Volvemos pronto.');
-$eta      = cfg_value($cfg, 'maint_eta',     '');
-// Logo: usa maint_logo si está configurado, si no cae al logo principal
-$maint_logo_raw = cfg_value($cfg, 'maint_logo', '');
-$logo = $maint_logo_raw !== '' ? $maint_logo_raw : cfg_value($cfg, 'site_header_logo', '/assets/img/logos/logorp.webp');
-$show_soc = cfg_value($cfg, 'maint_show_social', '1') === '1';
-// Countdown de lanzamiento
-$countdown_active = cfg_value($cfg, 'maint_countdown_active', '0') === '1';
-$launch_date      = cfg_value($cfg, 'maint_launch_date', '');
-$launch_label     = cfg_value($cfg, 'maint_launch_label', 'Lanzamiento oficial');
-$fb       = cfg_value($cfg, 'index_social_facebook_url', '');
-$ig       = cfg_value($cfg, 'site_footer_instagram_url', '');
-$yt       = cfg_value($cfg, 'site_footer_youtube_url', '');
-$tk       = cfg_value($cfg, 'site_footer_tiktok_url', '');
-$partido  = cfg_value($cfg, 'partido_nombre', 'ALIANZA PARA EL PROGRESO');
-$firma    = cfg_value($cfg, 'site_header_signature', 'Ivan Cisneros');
+try { $cfg = $pdo->query("SELECT clave, valor FROM configuracion")->fetchAll(PDO::FETCH_KEY_PAIR); } catch(Exception $e){}
 
 function maint_url(string $p): string {
+    if ($p === '') return '';
     if (preg_match('#^https?://#', $p)) return $p;
     return BASE_URL . '/' . ltrim($p, '/');
 }
 
+$title          = cfg_value($cfg, 'maint_title',   'Sitio en Mantenimiento');
+$msg            = cfg_value($cfg, 'maint_message', 'Estamos trabajando para mejorar tu experiencia. Volvemos pronto.');
+$eta            = cfg_value($cfg, 'maint_eta', '');
+$maint_logo_raw = cfg_value($cfg, 'maint_logo', '');
+$logo           = $maint_logo_raw !== '' ? $maint_logo_raw : cfg_value($cfg, 'site_header_logo', '/assets/img/logos/logorp.webp');
+$cand_photo_raw = cfg_value($cfg, 'maint_candidate_photo', '');
+$cand_photo     = $cand_photo_raw !== '' ? $cand_photo_raw : cfg_value($cfg, 'login_hero_img', '/assets/img/candidato/ivancisneros.webp');
+$show_soc       = cfg_value($cfg, 'maint_show_social', '1') === '1';
+$fb  = cfg_value($cfg, 'index_social_facebook_url', '');
+$ig  = cfg_value($cfg, 'site_footer_instagram_url', '');
+$yt  = cfg_value($cfg, 'site_footer_youtube_url', '');
+$tk  = cfg_value($cfg, 'site_footer_tiktok_url', '');
+$partido          = cfg_value($cfg, 'partido_nombre', 'ALIANZA PARA EL PROGRESO');
+$firma            = cfg_value($cfg, 'site_header_signature', 'Ivan Cisneros');
+$countdown_active = cfg_value($cfg, 'maint_countdown_active', '0') === '1';
+$launch_date      = cfg_value($cfg, 'maint_launch_date', '');
+$launch_label     = cfg_value($cfg, 'maint_launch_label', 'Lanzamiento oficial');
+
 http_response_code(503);
 header('Retry-After: 3600');
-$fv = cfg_value($cfg, 'site_favicon', $logo);
-$fv_url = maint_url($fv);
+$fv_url = maint_url(cfg_value($cfg, 'site_favicon', $logo) ?: $logo);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -44,492 +42,415 @@ $fv_url = maint_url($fv);
   <link rel="icon" href="<?= htmlspecialchars($fv_url) ?>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'DS-Digital';
+      src: url('<?= BASE_URL ?>/assets/fonts/ds-digib.ttf') format('truetype');
+      font-weight: normal; font-style: normal; font-display: swap;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; }
+    html { height: 100%; }
+    body {
+      min-height: 100%; font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px;
+      background: #020c1f;
+      position: relative; overflow-x: hidden;
+    }
 
     /* ── BG ANIMADO ──────────────────────────────────────────── */
-    body {
-      background: #020c1f;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .bg-layer {
-      position: fixed; inset: 0; pointer-events: none; overflow: hidden;
-    }
-
-    /* Degradado animado */
-    .bg-gradient {
+    .bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .bg-grad {
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% -10%, #1a3a8a44, transparent),
-                  radial-gradient(ellipse 60% 50% at 100% 100%, #0f205744, transparent),
-                  radial-gradient(ellipse 50% 40% at 0% 60%, #1e3a8a22, transparent),
-                  #020c1f;
-      animation: bgPulse 8s ease-in-out infinite alternate;
+      background:
+        radial-gradient(ellipse 70% 55% at 20% 10%, rgba(30,58,138,.35), transparent),
+        radial-gradient(ellipse 60% 50% at 85% 90%, rgba(15,32,87,.4), transparent),
+        radial-gradient(ellipse 50% 40% at 60% 50%, rgba(14,165,233,.08), transparent),
+        #020c1f;
+      animation: bgShift 12s ease-in-out infinite alternate;
     }
-    @keyframes bgPulse {
-      0%   { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
-    }
+    @keyframes bgShift { 0%{opacity:.7} 100%{opacity:1} }
 
-    /* Grid de puntos */
     .bg-dots {
       position: absolute; inset: 0;
-      background-image: radial-gradient(rgba(56,189,248,.15) 1px, transparent 1px);
-      background-size: 40px 40px;
-      animation: dotsParallax 20s linear infinite;
+      background-image: radial-gradient(rgba(56,189,248,.1) 1px, transparent 1px);
+      background-size: 36px 36px;
+      animation: dotsMove 25s linear infinite;
     }
-    @keyframes dotsParallax {
-      0%   { transform: translate(0, 0); }
-      100% { transform: translate(-40px, -40px); }
-    }
+    @keyframes dotsMove { 0%{transform:translate(0,0)} 100%{transform:translate(-36px,-36px)} }
 
-    /* Orbes de glow */
     .orb {
       position: absolute; border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(90px); pointer-events: none;
       animation: orbFloat ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-    .orb-1 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, #1e3a8a55, transparent);
-      top: -150px; left: -100px;
-      animation-duration: 7s;
-    }
-    .orb-2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, #0ea5e933, transparent);
-      bottom: -100px; right: -80px;
-      animation-duration: 9s; animation-delay: -3s;
-    }
-    .orb-3 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, #facc1522, transparent);
-      top: 40%; left: 60%;
-      animation-duration: 11s; animation-delay: -5s;
     }
     @keyframes orbFloat {
-      0%   { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(30px, 20px) scale(1.1); }
+      0%  { transform: translate(0,0) scale(1); }
+      100%{ transform: translate(20px,15px) scale(1.08); }
     }
 
-    /* Partículas flotantes */
-    .particle {
-      position: absolute; border-radius: 50%;
-      animation: particleRise linear infinite;
-      pointer-events: none;
-    }
-    @keyframes particleRise {
-      0%   { transform: translateY(110vh) scale(0); opacity: 0; }
-      5%   { opacity: 1; }
-      95%  { opacity: .5; }
-      100% { transform: translateY(-10vh) scale(1.3); opacity: 0; }
-    }
-
-    /* Líneas scan */
     .scan-line {
       position: absolute; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(56,189,248,.3), transparent);
-      animation: scanMove 6s linear infinite;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,.2), transparent);
+      animation: scanMove 8s linear infinite; pointer-events: none;
     }
-    @keyframes scanMove {
-      0%   { top: -2px; opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: .5; }
-      100% { top: 100%; opacity: 0; }
-    }
-    .scan-line:nth-child(2) { animation-delay: -2s; }
-    .scan-line:nth-child(3) { animation-delay: -4s; }
+    @keyframes scanMove { 0%{top:-1px;opacity:0} 8%{opacity:1} 92%{opacity:.4} 100%{top:100%;opacity:0} }
 
-    /* ── CARD PRINCIPAL ──────────────────────────────────────── */
-    .main-card {
+    .particle { position: absolute; border-radius: 50%; animation: rise linear infinite; pointer-events: none; }
+    @keyframes rise { 0%{transform:translateY(110vh);opacity:0} 6%{opacity:.9} 94%{opacity:.4} 100%{transform:translateY(-5vh);opacity:0} }
+
+    /* ── CARD BOXED ──────────────────────────────────────────── */
+    .card {
       position: relative; z-index: 10;
-      max-width: 560px; width: 90%;
-      background: rgba(255,255,255,.04);
-      backdrop-filter: blur(20px) saturate(1.5);
-      -webkit-backdrop-filter: blur(20px) saturate(1.5);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 28px;
-      padding: 52px 44px;
+      width: 100%; max-width: 920px;
+      border-radius: 28px; overflow: hidden;
+      display: flex; flex-direction: column;
       box-shadow:
-        0 0 0 1px rgba(56,189,248,.08),
-        0 32px 80px rgba(0,0,0,.6),
-        inset 0 1px 0 rgba(255,255,255,.08);
-      animation: cardIn .8s cubic-bezier(.34,1.56,.64,1) both;
-      text-align: center;
+        0 0 0 1px rgba(255,255,255,.06),
+        0 40px 100px rgba(0,0,0,.6),
+        0 0 80px rgba(30,58,138,.15);
+      animation: cardIn .75s cubic-bezier(.34,1.56,.64,1) both;
     }
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(40px) scale(.95); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity:0; transform:translateY(36px) scale(.96); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
     }
 
     /* Borde glow animado */
-    .card-glow {
-      position: absolute; inset: -1px; border-radius: 29px;
-      background: linear-gradient(135deg, rgba(56,189,248,.3), transparent, rgba(250,204,21,.2), transparent);
+    .card::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0; border-radius: 28px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(56,189,248,.35), transparent 40%, rgba(250,204,21,.2), transparent);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor; mask-composite: exclude;
-      padding: 1px;
-      animation: glowRotate 4s linear infinite;
+      pointer-events: none;
+      animation: borderGlow 5s linear infinite;
+    }
+    @keyframes borderGlow { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
+
+    @media (min-width: 700px) {
+      .card { flex-direction: row; min-height: 560px; }
+    }
+
+    /* ── PANEL FOTO ──────────────────────────────────────────── */
+    .photo-panel {
+      position: relative; overflow: hidden;
+      height: 220px; flex-shrink: 0;
+      background: #0f2057;
+    }
+    @media (min-width: 700px) {
+      .photo-panel { width: 42%; height: auto; }
+    }
+
+    .photo-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      transition: transform 8s ease;
+    }
+    .card:hover .photo-img { transform: scale(1.04); }
+
+    .photo-ov-r {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 30%, rgba(2,12,31,.5) 100%);
+    }
+    @media (min-width: 700px) {
+      .photo-ov-r { background: linear-gradient(to right, transparent 45%, rgba(2,12,31,.75) 100%); }
+    }
+    .photo-ov-b {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(2,12,31,.95) 0%, transparent 50%);
+    }
+    @media (min-width: 700px) {
+      .photo-ov-b { background: linear-gradient(to top, rgba(2,12,31,.85) 0%, transparent 40%); }
+    }
+    .photo-dots-inner {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(250,204,21,.1) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Logo y texto en foto */
+    .photo-logo-wrap {
+      position: absolute; top: 20px; left: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .photo-logo {
+      height: 38px; object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(56,189,248,.4));
+    }
+
+    .photo-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0; padding: 20px;
+    }
+    .photo-badge-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(250,204,21,.12); border: 1px solid rgba(250,204,21,.25);
+      border-radius: 999px; padding: 3px 12px;
+      font-size: 9px; font-weight: 800; letter-spacing: .14em;
+      text-transform: uppercase; color: #facc15; margin-bottom: 10px;
+    }
+    .bdot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #facc15; box-shadow: 0 0 7px #facc15;
+      animation: bdot 1.4s ease-in-out infinite;
+    }
+    @keyframes bdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+    .photo-name {
+      font-size: clamp(1.1rem, 3vw, 1.6rem); font-weight: 900;
+      color: #fff; line-height: 1.1;
+      text-shadow: 0 2px 16px rgba(0,0,0,.5);
+    }
+    .photo-sub { font-size: .75rem; color: rgba(56,189,248,.75); font-weight: 500; margin-top: 3px; }
+    .photo-lines { display:flex; align-items:center; gap:6px; margin-top:12px; }
+    .photo-lines span { display:block; height:2px; border-radius:999px; background:#facc15; }
+
+    /* ── PANEL CONTENIDO ─────────────────────────────────────── */
+    .content-panel {
+      flex: 1; min-width: 0;
+      background: rgba(8,20,60,.92);
+      backdrop-filter: blur(16px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 36px 32px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+
+    /* Inner glow del panel */
+    .content-panel::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(56,189,248,.07), transparent);
       pointer-events: none;
     }
-    @keyframes glowRotate {
-      0%   { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
+    .content-panel::after {
+      content: '';
+      position: absolute; bottom: -50px; left: -50px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(250,204,21,.05), transparent);
+      pointer-events: none;
     }
 
-    /* ── COUNTDOWN ──────────────────────────────────────────── */
-    .countdown-wrap {
-      margin: 0 auto 28px;
-      text-align: center;
+    /* Logo (solo móvil — en desktop va en la foto) */
+    .logo-mobile {
+      height: 40px; margin: 0 auto 16px; display: block;
+      filter: drop-shadow(0 0 10px rgba(56,189,248,.3));
     }
-    .countdown-label {
-      color: rgba(255,255,255,.5);
-      font-size: 10px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .12em;
-      margin-bottom: 10px;
-    }
-    .countdown-digits {
-      display: inline-flex; align-items: center; gap: 8px;
-    }
-    .countdown-unit {
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .countdown-box {
-      background: rgba(11,30,74,.9);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 12px;
-      min-width: 56px; padding: 8px 10px;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
-      font-family: 'DS-Digital', 'Courier New', monospace;
-    }
-    .countdown-num {
-      display: block;
-      font-size: 28px; font-weight: 900;
-      color: #fff; line-height: 1;
-      letter-spacing: .05em;
-      text-shadow: 0 0 12px rgba(56,189,248,.5);
-    }
-    .countdown-unit-label {
-      color: rgba(255,255,255,.35);
-      font-size: 9px; text-transform: uppercase;
-      letter-spacing: .1em; margin-top: 4px;
-      font-weight: 700;
-    }
-    .countdown-sep {
-      color: rgba(255,255,255,.25);
-      font-size: 24px; font-weight: 900;
-      margin-bottom: 14px; line-height: 1;
-    }
-    .countdown-done {
-      color: #38bdf8; font-weight: 800;
-      font-size: .95rem; letter-spacing: .05em;
-    }
+    @media (min-width: 700px) { .logo-mobile { display: none; } }
 
-    /* ── ENGRANAJE ───────────────────────────────────────────── */
-    .gear-wrap {
-      position: relative; width: 88px; height: 88px;
-      margin: 0 auto 28px;
-    }
-    .gear-ring {
-      position: absolute; inset: 0; border-radius: 50%;
-      background: rgba(30,58,138,.3);
-      border: 1px solid rgba(56,189,248,.2);
-      animation: gearRingPulse 3s ease-in-out infinite;
-    }
-    @keyframes gearRingPulse {
-      0%,100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(56,189,248,.3); }
-      50%      { transform: scale(1.08); box-shadow: 0 0 0 12px rgba(56,189,248,.0); }
-    }
-    .gear-icon {
-      position: absolute; inset: 12px;
-      animation: gearSpin 4s linear infinite;
-      color: rgba(56,189,248,.9);
-      filter: drop-shadow(0 0 8px rgba(56,189,248,.6));
-    }
-    .gear-inner {
-      position: absolute; inset: 24px;
-      animation: gearSpin 4s linear infinite reverse;
-      color: rgba(250,204,21,.7);
-      filter: drop-shadow(0 0 6px rgba(250,204,21,.5));
-    }
-    @keyframes gearSpin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* ── LOGO ────────────────────────────────────────────────── */
-    .logo-img {
-      height: 44px; margin: 0 auto 20px; display: block;
-      filter: drop-shadow(0 0 12px rgba(56,189,248,.3));
-      animation: logoGlow 3s ease-in-out infinite alternate;
-    }
-    @keyframes logoGlow {
-      0%   { filter: drop-shadow(0 0 8px  rgba(56,189,248,.2)); }
-      100% { filter: drop-shadow(0 0 20px rgba(56,189,248,.5)); }
-    }
-
-    /* ── TEXTOS ──────────────────────────────────────────────── */
+    /* Badge */
     .badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(56,189,248,.1);
-      border: 1px solid rgba(56,189,248,.2);
-      border-radius: 999px;
-      padding: 4px 14px;
+      background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.2);
+      border-radius: 999px; padding: 4px 14px;
       font-size: 10px; font-weight: 800; letter-spacing: .12em;
-      text-transform: uppercase; color: #38bdf8;
-      margin-bottom: 20px;
+      text-transform: uppercase; color: #38bdf8; margin-bottom: 20px;
     }
     .badge-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: #38bdf8;
-      animation: badgeBlink 1.2s ease-in-out infinite;
-      box-shadow: 0 0 6px #38bdf8;
-    }
-    @keyframes badgeBlink {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: .3; transform: scale(.7); }
+      background: #38bdf8; box-shadow: 0 0 7px #38bdf8;
+      animation: bdot 1.2s ease-in-out infinite;
     }
 
+    /* Engranaje */
+    .gear-wrap { position:relative; width:68px; height:68px; margin:0 auto 18px; }
+    .gear-ring {
+      position:absolute; inset:0; border-radius:50%;
+      background:rgba(30,58,138,.3); border:1px solid rgba(56,189,248,.2);
+      animation:gRing 3s ease-in-out infinite;
+    }
+    @keyframes gRing { 0%,100%{transform:scale(1)} 50%{transform:scale(1.09)} }
+    .gs1 { position:absolute; inset:9px; animation:spin 4s linear infinite; color:rgba(56,189,248,.9); filter:drop-shadow(0 0 7px rgba(56,189,248,.5)); }
+    .gs2 { position:absolute; inset:19px; animation:spin 4s linear infinite reverse; color:rgba(250,204,21,.75); filter:drop-shadow(0 0 5px rgba(250,204,21,.4)); }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    /* Countdown */
+    .cd-label { color:rgba(255,255,255,.4); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; margin-bottom:10px; }
+    .cd-row { display:inline-flex; align-items:center; gap:6px; margin-bottom:20px; }
+    .cd-unit { display:flex; flex-direction:column; align-items:center; }
+    .cd-box {
+      background:rgba(5,15,50,.95); border:1px solid rgba(56,189,248,.2);
+      border-radius:10px; min-width:50px; padding:7px 8px;
+      box-shadow:0 4px 20px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05), 0 0 12px rgba(56,189,248,.08);
+    }
+    .cd-num {
+      display:block; font-size:28px; font-weight:normal; color:#fff; line-height:1;
+      text-align:center; letter-spacing:.06em;
+      font-family:'DS-Digital','Courier New',monospace;
+      text-shadow:0 0 14px rgba(56,189,248,.7), 0 0 30px rgba(56,189,248,.3);
+    }
+    .cd-ulabel { color:rgba(255,255,255,.28); font-size:8px; text-transform:uppercase; letter-spacing:.1em; margin-top:4px; font-weight:700; }
+    .cd-sep { color:rgba(56,189,248,.35); font-size:20px; font-weight:900; margin-bottom:12px; }
+    .cd-done { color:#38bdf8; font-weight:800; font-size:.9rem; }
+
+    /* Título */
     h1 {
-      font-size: clamp(1.6rem, 5vw, 2.4rem);
-      font-weight: 900; line-height: 1.1;
-      color: #fff;
-      text-shadow: 0 0 40px rgba(56,189,248,.4);
-      margin-bottom: 16px;
-      animation: textGlow 4s ease-in-out infinite alternate;
+      font-size:clamp(1.4rem,3.5vw,1.9rem); font-weight:900; color:#fff;
+      line-height:1.15; margin-bottom:12px;
+      animation:tGlow 4s ease-in-out infinite alternate;
     }
-    @keyframes textGlow {
-      0%   { text-shadow: 0 0 20px rgba(56,189,248,.3); }
-      100% { text-shadow: 0 0 50px rgba(56,189,248,.6), 0 0 80px rgba(30,58,138,.4); }
-    }
-    h1 span { color: #38bdf8; }
+    @keyframes tGlow { 0%{text-shadow:0 0 20px rgba(56,189,248,.2)} 100%{text-shadow:0 0 40px rgba(56,189,248,.55)} }
 
-    .sub {
-      color: rgba(255,255,255,.55);
-      font-size: .95rem; line-height: 1.6;
-      margin-bottom: 32px;
-    }
+    .sub { color:rgba(255,255,255,.48); font-size:.875rem; line-height:1.65; margin-bottom:22px; }
 
-    /* ── ETA ─────────────────────────────────────────────────── */
+    /* ETA */
     .eta-box {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: rgba(250,204,21,.07);
-      border: 1px solid rgba(250,204,21,.2);
-      border-radius: 14px; padding: 12px 20px;
-      margin-bottom: 32px;
-      animation: etaGlow 3s ease-in-out infinite alternate;
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(250,204,21,.07); border:1px solid rgba(250,204,21,.2);
+      border-radius:12px; padding:9px 18px; margin-bottom:22px;
     }
-    @keyframes etaGlow {
-      0%   { box-shadow: 0 0 0 rgba(250,204,21,0); }
-      100% { box-shadow: 0 0 20px rgba(250,204,21,.15); }
-    }
-    .eta-icon { color: #facc15; flex-shrink: 0; }
-    .eta-text { color: #facc15; font-size: .85rem; font-weight: 700; }
+    .eta-text { color:#facc15; font-size:.8rem; font-weight:700; }
 
-    /* ── BARRA PROGRESO ──────────────────────────────────────── */
-    .progress-wrap {
-      background: rgba(255,255,255,.06);
-      border-radius: 999px; height: 3px;
-      overflow: hidden; margin-bottom: 36px;
-      position: relative;
+    /* Progreso shimmer */
+    .prog { background:rgba(255,255,255,.06); border-radius:999px; height:2px; overflow:hidden; margin-bottom:24px; position:relative; }
+    .prog-bar {
+      height:100%; border-radius:999px;
+      background:linear-gradient(90deg,#1e3a8a,#38bdf8,#facc15);
+      background-size:200% 100%;
+      animation:pFlow 2.5s linear infinite; width:55%;
     }
-    .progress-bar {
-      height: 100%; border-radius: 999px;
-      background: linear-gradient(90deg, #1e3a8a, #38bdf8, #facc15);
-      background-size: 200% 100%;
-      animation: progressFlow 2.5s linear infinite;
-      width: 60%;
-    }
-    @keyframes progressFlow {
-      0%   { background-position: 0% 0%; transform: translateX(-100%); }
-      100% { background-position: 100% 0%; transform: translateX(200%); }
-    }
+    @keyframes pFlow { 0%{background-position:0%;transform:translateX(-100%)} 100%{background-position:100%;transform:translateX(200%)} }
 
-    /* ── DIVISOR ─────────────────────────────────────────────── */
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      color: rgba(255,255,255,.15); font-size: 10px;
-      text-transform: uppercase; letter-spacing: .1em;
-      margin-bottom: 24px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
-    }
+    /* Divisor */
+    .divider { display:flex; align-items:center; gap:10px; color:rgba(255,255,255,.1); font-size:9px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:16px; }
+    .divider::before,.divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent); }
 
-    /* ── REDES SOCIALES ──────────────────────────────────────── */
-    .social-row {
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      flex-wrap: wrap;
-    }
+    /* Redes */
+    .social-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
     .social-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 18px; border-radius: 12px;
-      font-size: 12px; font-weight: 700;
-      text-decoration: none;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.6);
-      transition: all .2s;
-      backdrop-filter: blur(4px);
+      display:inline-flex; align-items:center; gap:7px;
+      padding:7px 14px; border-radius:9px; font-size:11px; font-weight:700;
+      text-decoration:none; border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.04); color:rgba(255,255,255,.5);
+      transition:all .2s; backdrop-filter:blur(4px);
     }
-    .social-btn:hover {
-      background: rgba(255,255,255,.1);
-      color: #fff;
-      border-color: rgba(255,255,255,.2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,.3);
-    }
-    .social-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .social-btn:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.18); transform:translateY(-2px); box-shadow:0 8px 18px rgba(0,0,0,.3); }
+    .social-btn svg { width:12px; height:12px; flex-shrink:0; }
 
-    /* ── FIRMA INFERIOR ──────────────────────────────────────── */
-    .footer-sig {
-      margin-top: 36px; padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,.06);
-      font-size: 11px; color: rgba(255,255,255,.2);
-      letter-spacing: .05em;
-    }
-    .footer-sig span { color: rgba(56,189,248,.4); }
-
-    /* Mobile */
-    @media (max-width: 500px) {
-      .main-card { padding: 40px 24px; }
-      html, body { overflow: auto; }
-    }
+    /* Firma */
+    .footer-sig { margin-top:24px; padding-top:14px; border-top:1px solid rgba(255,255,255,.05); font-size:10px; color:rgba(255,255,255,.16); letter-spacing:.05em; }
+    .footer-sig span { color:rgba(56,189,248,.3); }
   </style>
 </head>
 <body>
 
-  <!-- Capas de fondo -->
-  <div class="bg-layer">
-    <div class="bg-gradient"></div>
-    <div class="bg-dots"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="scan-line"></div>
-    <div class="scan-line"></div>
-    <div class="scan-line"></div>
-    <!-- Partículas -->
-    <div class="particle" style="width:4px;height:4px;left:8%;background:rgba(56,189,248,.4);animation-duration:18s;animation-delay:0s"></div>
-    <div class="particle" style="width:6px;height:6px;left:22%;background:rgba(250,204,21,.3);animation-duration:22s;animation-delay:-4s"></div>
-    <div class="particle" style="width:3px;height:3px;left:38%;background:rgba(56,189,248,.5);animation-duration:15s;animation-delay:-8s"></div>
-    <div class="particle" style="width:5px;height:5px;left:55%;background:rgba(250,204,21,.2);animation-duration:20s;animation-delay:-2s"></div>
-    <div class="particle" style="width:4px;height:4px;left:70%;background:rgba(56,189,248,.3);animation-duration:17s;animation-delay:-6s"></div>
-    <div class="particle" style="width:7px;height:7px;left:85%;background:rgba(250,204,21,.25);animation-duration:24s;animation-delay:-10s"></div>
-    <div class="particle" style="width:3px;height:3px;left:15%;background:rgba(255,255,255,.2);animation-duration:19s;animation-delay:-13s"></div>
-    <div class="particle" style="width:5px;height:5px;left:92%;background:rgba(56,189,248,.35);animation-duration:21s;animation-delay:-1s"></div>
-  </div>
+<!-- ── Fondo animado ── -->
+<div class="bg-layer">
+  <div class="bg-grad"></div>
+  <div class="bg-dots"></div>
+  <div class="orb" style="width:500px;height:500px;top:-150px;left:-120px;background:radial-gradient(circle,rgba(30,58,138,.3),transparent);animation-duration:9s"></div>
+  <div class="orb" style="width:350px;height:350px;bottom:-80px;right:-80px;background:radial-gradient(circle,rgba(14,165,233,.2),transparent);animation-duration:11s;animation-delay:-4s"></div>
+  <div class="orb" style="width:200px;height:200px;top:40%;left:40%;background:radial-gradient(circle,rgba(250,204,21,.06),transparent);animation-duration:7s;animation-delay:-2s"></div>
+  <div class="scan-line" style="animation-delay:0s"></div>
+  <div class="scan-line" style="animation-delay:-3s"></div>
+  <div class="particle" style="width:4px;height:4px;left:8%;background:rgba(56,189,248,.4);animation-duration:18s;animation-delay:0s"></div>
+  <div class="particle" style="width:5px;height:5px;left:25%;background:rgba(250,204,21,.3);animation-duration:22s;animation-delay:-4s"></div>
+  <div class="particle" style="width:3px;height:3px;left:55%;background:rgba(56,189,248,.5);animation-duration:16s;animation-delay:-8s"></div>
+  <div class="particle" style="width:6px;height:6px;left:75%;background:rgba(250,204,21,.2);animation-duration:20s;animation-delay:-2s"></div>
+  <div class="particle" style="width:4px;height:4px;left:90%;background:rgba(56,189,248,.35);animation-duration:19s;animation-delay:-11s"></div>
+</div>
 
-  <!-- Card principal -->
-  <div class="main-card">
-    <div class="card-glow"></div>
+<!-- ── Card boxed centrada ── -->
+<div class="card">
 
-    <!-- Logo -->
-    <img src="<?= htmlspecialchars(maint_url($logo)) ?>"
-         alt="<?= htmlspecialchars($firma) ?>"
-         class="logo-img"
+  <!-- Panel foto -->
+  <div class="photo-panel">
+    <?php if ($cand_photo): ?>
+    <img src="<?= htmlspecialchars(maint_url($cand_photo)) ?>"
+         alt="<?= htmlspecialchars($firma) ?>" class="photo-img"
          onerror="this.style.display='none'">
+    <?php endif; ?>
+    <div class="photo-ov-r"></div>
+    <div class="photo-ov-b"></div>
+    <div class="photo-dots-inner"></div>
 
-    <!-- Badge status -->
-    <div class="badge">
-      <span class="badge-dot"></span>
-      En mantenimiento
+    <!-- Logo en foto -->
+    <div class="photo-logo-wrap">
+      <img src="<?= htmlspecialchars(maint_url($logo)) ?>"
+           alt="<?= htmlspecialchars($partido) ?>" class="photo-logo"
+           onerror="this.style.display='none'">
     </div>
 
-    <!-- Engranajes animados -->
+    <!-- Texto inferior en foto -->
+    <div class="photo-bottom">
+      <div class="photo-badge-pill"><span class="bdot"></span>En mantenimiento</div>
+      <p class="photo-name"><?= htmlspecialchars($firma) ?></p>
+      <p class="photo-sub"><?= htmlspecialchars($partido) ?></p>
+      <div class="photo-lines">
+        <span style="width:36px"></span>
+        <span style="width:18px;opacity:.4"></span>
+        <span style="width:7px;opacity:.2"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel contenido -->
+  <div class="content-panel">
+
+    <!-- Logo solo móvil -->
+    <img src="<?= htmlspecialchars(maint_url($logo)) ?>"
+         alt="<?= htmlspecialchars($partido) ?>"
+         class="logo-mobile" onerror="this.style.display='none'">
+
+    <!-- Badge -->
+    <div class="badge"><span class="badge-dot"></span>En mantenimiento</div>
+
+    <!-- Engranaje -->
     <div class="gear-wrap">
       <div class="gear-ring"></div>
-      <svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <svg class="gs1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>
-      <svg class="gear-inner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <svg class="gs2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
       </svg>
     </div>
 
     <?php if ($countdown_active && $launch_date): ?>
-    <!-- Countdown regresivo -->
-    <div class="countdown-wrap" id="countdownWrap">
-      <p class="countdown-label"><?= htmlspecialchars($launch_label) ?></p>
-      <div class="countdown-digits" id="countdownDigits">
-        <div class="countdown-unit">
-          <div class="countdown-box"><span class="countdown-num" id="cd-days">--</span></div>
-          <span class="countdown-unit-label">Días</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit">
-          <div class="countdown-box"><span class="countdown-num" id="cd-hours">--</span></div>
-          <span class="countdown-unit-label">Hrs</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit">
-          <div class="countdown-box"><span class="countdown-num" id="cd-mins">--</span></div>
-          <span class="countdown-unit-label">Min</span>
-        </div>
-        <span class="countdown-sep">:</span>
-        <div class="countdown-unit">
-          <div class="countdown-box"><span class="countdown-num" id="cd-secs">--</span></div>
-          <span class="countdown-unit-label">Seg</span>
-        </div>
-      </div>
+    <!-- Countdown -->
+    <p class="cd-label"><?= htmlspecialchars($launch_label) ?></p>
+    <div class="cd-row" id="cdRow">
+      <div class="cd-unit"><div class="cd-box"><span class="cd-num" id="cd-d">--</span></div><span class="cd-ulabel">Días</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><div class="cd-box"><span class="cd-num" id="cd-h">--</span></div><span class="cd-ulabel">Hrs</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><div class="cd-box"><span class="cd-num" id="cd-m">--</span></div><span class="cd-ulabel">Min</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><div class="cd-box"><span class="cd-num" id="cd-s">--</span></div><span class="cd-ulabel">Seg</span></div>
     </div>
     <script>
     (function(){
-      // Fecha objetivo en hora de Lima (UTC-5)
-      var target = new Date('<?= htmlspecialchars($launch_date) ?>T00:00:00-05:00').getTime();
-      function pad(n){ return String(n).padStart(2,'0'); }
+      var t=new Date('<?= htmlspecialchars($launch_date) ?>T00:00:00-05:00').getTime();
+      function p(n){return String(n).padStart(2,'0');}
       function tick(){
-        var now  = Date.now();
-        var diff = target - now;
-        if (diff <= 0) {
-          document.getElementById('countdownDigits').innerHTML =
-            '<span class="countdown-done">¡Ha llegado el momento!</span>';
-          return;
-        }
-        var d = Math.floor(diff / 86400000);
-        var h = Math.floor((diff % 86400000) / 3600000);
-        var m = Math.floor((diff % 3600000)  / 60000);
-        var s = Math.floor((diff % 60000)    / 1000);
-        document.getElementById('cd-days').textContent  = pad(d);
-        document.getElementById('cd-hours').textContent = pad(h);
-        document.getElementById('cd-mins').textContent  = pad(m);
-        document.getElementById('cd-secs').textContent  = pad(s);
+        var diff=t-Date.now();
+        if(diff<=0){document.getElementById('cdRow').innerHTML='<span class="cd-done">¡Ha llegado el momento!</span>';return;}
+        var d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+        document.getElementById('cd-d').textContent=p(d);
+        document.getElementById('cd-h').textContent=p(h);
+        document.getElementById('cd-m').textContent=p(m);
+        document.getElementById('cd-s').textContent=p(s);
       }
-      tick(); setInterval(tick, 1000);
+      tick();setInterval(tick,1000);
     })();
     </script>
     <?php endif; ?>
 
-    <!-- Título -->
     <h1><?= htmlspecialchars($title) ?></h1>
-
-    <!-- Mensaje -->
     <p class="sub"><?= nl2br(htmlspecialchars($msg)) ?></p>
 
-    <!-- ETA si está configurado -->
     <?php if ($eta): ?>
     <div class="eta-box">
-      <svg class="eta-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      <svg class="eta-icon" width="14" height="14" fill="none" stroke="#facc15" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
       <span class="eta-text"><?= htmlspecialchars($eta) ?></span>
     </div>
     <?php endif; ?>
 
-    <!-- Barra de progreso animada -->
-    <div class="progress-wrap">
-      <div class="progress-bar"></div>
-    </div>
+    <div class="prog"><div class="prog-bar"></div></div>
 
-    <!-- Redes sociales -->
     <?php if ($show_soc && ($fb || $ig || $yt || $tk)): ?>
     <div class="divider">Síguenos</div>
     <div class="social-row">
@@ -560,11 +481,12 @@ $fv_url = maint_url($fv);
     </div>
     <?php endif; ?>
 
-    <!-- Firma -->
     <div class="footer-sig">
       <span><?= htmlspecialchars($partido) ?></span> &nbsp;·&nbsp; <?= htmlspecialchars($firma) ?>
     </div>
   </div>
+
+</div><!-- /card -->
 
 </body>
 </html>

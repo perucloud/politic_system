@@ -17,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── POST: acción delete ───────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     require_rol('admin');
-    $del_id = (int)($_POST['id'] ?? 0);
-    if ($del_id > 0) {
+    $del_id = isset($_POST['id']) ? (int)$_POST['id'] : -1;
+    if ($del_id >= 0) {
         try {
             // Obtener slug antes de borrar
             $stmt = $pdo->prepare("SELECT slug FROM candidatos_distritales WHERE id = ?");
@@ -58,18 +58,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
 // ── POST: acción toggle activo ────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'toggle') {
-    $tog_id = (int)($_POST['id'] ?? 0);
-    if ($tog_id > 0) {
+    $tog_id = isset($_POST['id']) ? (int)$_POST['id'] : -1;
+    $toggle_ok = false;
+    if ($tog_id >= 0) {
         try {
-            $pdo->prepare("UPDATE candidatos_distritales SET activo = NOT activo WHERE id = ?")
-                ->execute([$tog_id]);
-            $slug_log = $pdo->prepare("SELECT slug FROM candidatos_distritales WHERE id = ?");
+            $affected = $pdo->prepare("UPDATE candidatos_distritales SET activo = NOT activo WHERE id = ?");
+            $affected->execute([$tog_id]);
+            $toggle_ok = $affected->rowCount() > 0;
+
+            $slug_log = $pdo->prepare("SELECT slug, activo FROM candidatos_distritales WHERE id = ?");
             $slug_log->execute([$tog_id]);
-            $sl = $slug_log->fetchColumn();
-            log_activity($pdo, 'Cambió estado del distrito: ' . $sl, 'candidatos_distritales');
-        } catch (Exception $e) {}
+            $sl_row = $slug_log->fetch();
+            $sl = $sl_row['slug'] ?? '';
+            $nuevo_estado = $sl_row['activo'] ? 'activó' : 'desactivó';
+            log_activity($pdo, ucfirst($nuevo_estado) . ' distrito: ' . $sl, 'candidatos_distritales');
+        } catch (Exception $e) {
+            $toggle_ok = false;
+        }
     }
-    header('Location: candidatos-distritales.php?msg=toggled');
+
+    // Purgar caché de LiteSpeed para que el sitio público se actualice inmediatamente
+    header('X-LiteSpeed-Purge: *');
+
+    $msg = $toggle_ok ? 'toggled' : 'error';
+    header('Location: candidatos-distritales.php?msg=' . $msg);
     exit;
 }
 

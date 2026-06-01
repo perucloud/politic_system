@@ -5,6 +5,10 @@
 // Editar solo las variables de configuración de abajo.
 // ============================================================
 require_once __DIR__ . '/../includes/config/db.php';
+require_once __DIR__ . '/../includes/helpers/config.php';
+$cfg_camp = [];
+try { $cfg_camp = $pdo->query("SELECT clave, valor FROM configuracion")->fetchAll(PDO::FETCH_KEY_PAIR); } catch(Exception $e){}
+require_once __DIR__ . '/../includes/maintenance_check.php';
 
 $_partido_nombre = 'ALIANZA PARA EL PROGRESO';
 try {

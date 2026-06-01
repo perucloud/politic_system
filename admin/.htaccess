@@ -12,3 +12,15 @@ DirectoryIndex login.php
 <FilesMatch "^(layout\.php|layout|install\.sql)$">
     Require all denied
 </FilesMatch>
+
+# ── Sin caché en el panel admin (LiteSpeed + Apache) ─────────
+<IfModule mod_headers.c>
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+</IfModule>
+
+# LiteSpeed: deshabilitar caché en todo el admin
+<IfModule LiteSpeed>
+    CacheLookup off
+</IfModule>

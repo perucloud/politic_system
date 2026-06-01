@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // ============================================================
 // config-pagina.php — Configuración global del sitio
 // Tabs: Favicon | Nombre del Partido | Colores | Contador
@@ -181,6 +181,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // ── Tab: Mantenimiento ────────────────────────────────────
+    if ($active_tab === 'mantenimiento') {
+        $maint_active           = isset($_POST['maintenance_active'])    ? '1' : '0';
+        $maint_title            = trim($_POST['maint_title']            ?? 'Sitio en Mantenimiento');
+        $maint_message          = trim($_POST['maint_message']          ?? 'Estamos trabajando para mejorar tu experiencia. Volvemos pronto.');
+        $maint_eta              = trim($_POST['maint_eta']              ?? '');
+        $maint_show_social      = isset($_POST['maint_show_social'])     ? '1' : '0';
+        $maint_logo             = trim($_POST['maint_logo']             ?? '');
+        $maint_countdown_active = isset($_POST['maint_countdown_active']) ? '1' : '0';
+        $maint_launch_date      = trim($_POST['maint_launch_date']      ?? '');
+        $maint_launch_label     = trim($_POST['maint_launch_label']     ?? 'Lanzamiento oficial');
+        if ($maint_launch_date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $maint_launch_date)) $maint_launch_date = '';
+        try {
+            cfg_save_values($pdo, [
+                'maintenance_active'    => $maint_active,
+                'maint_title'           => $maint_title,
+                'maint_message'         => $maint_message,
+                'maint_eta'             => $maint_eta,
+                'maint_show_social'     => $maint_show_social,
+                'maint_logo'            => $maint_logo,
+                'maint_countdown_active'=> $maint_countdown_active,
+                'maint_launch_date'     => $maint_launch_date,
+                'maint_launch_label'    => $maint_launch_label,
+            ]);
+            $config['maintenance_active']     = $maint_active;
+            $config['maint_title']            = $maint_title;
+            $config['maint_message']          = $maint_message;
+            $config['maint_eta']              = $maint_eta;
+            $config['maint_show_social']      = $maint_show_social;
+            $config['maint_logo']             = $maint_logo;
+            $config['maint_countdown_active'] = $maint_countdown_active;
+            $config['maint_launch_date']      = $maint_launch_date;
+            $config['maint_launch_label']     = $maint_launch_label;
+            $accion = $maint_active === '1' ? 'ACTIVÓ' : 'desactivó';
+            log_activity($pdo, $accion . ' el modo mantenimiento del sitio', 'configuracion_global');
+            $flash = $maint_active === '1'
+                ? '⚠️ Modo mantenimiento ACTIVADO. El sitio público muestra la página de mantenimiento.'
+                : 'Modo mantenimiento desactivado. El sitio público está visible.';
+        } catch (Exception $e) {
+            $flash      = 'Error al guardar: ' . $e->getMessage();
+            $flash_type = 'error';
+        }
+    }
+
     if ($flash && $flash_type === 'ok') {
         header('Location: config-pagina.php?tab=' . urlencode($active_tab) . '&ok=1');
         exit;
@@ -195,6 +239,7 @@ require __DIR__ . '/layout.php';
 ?>
 
 <style>
+  [x-cloak] { display: none !important; }
   .cpag-tab {
     padding: 0.5rem 1.1rem;
     font-size: 0.8rem;
@@ -242,11 +287,12 @@ require __DIR__ . '/layout.php';
   <!-- Tabs -->
   <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-1.5 flex flex-wrap gap-1">
     <?php foreach ([
-      'favicon'  => 'Favicon',
-      'login'    => 'Login',
-      'partido'  => 'Nombre del Partido',
-      'colores'  => 'Colores',
-      'contador' => 'Contador',
+      'favicon'        => 'Favicon',
+      'login'          => 'Login',
+      'partido'        => 'Nombre del Partido',
+      'colores'        => 'Colores',
+      'contador'       => 'Contador',
+      'mantenimiento'  => '🔧 Mantenimiento',
     ] as $tid => $tlabel): ?>
     <button type="button"
             @click="activeTab = '<?= $tid ?>'"
@@ -777,7 +823,229 @@ require __DIR__ . '/layout.php';
     </div>
   </form>
 
-</div>
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB: MANTENIMIENTO                                        -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <?php $maint_on = cfg_value($config, 'maintenance_active', '0') === '1'; ?>
+  <div x-show="activeTab === 'mantenimiento'" x-cloak>
+  <form method="POST" class="space-y-6">
+    <input type="hidden" name="tab" value="mantenimiento">
+    <?= csrf_field() ?>
+
+    <?php if ($maint_on): ?>
+    <div class="flex items-start gap-3 bg-red-50 border-2 border-red-300 rounded-2xl px-5 py-4 animate-pulse">
+      <svg class="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <div>
+        <p class="font-black text-red-700 text-sm">⚠️ MODO MANTENIMIENTO ACTIVO</p>
+        <p class="text-xs text-red-600 mt-0.5">El sitio público está mostrando la página de mantenimiento ahora mismo. Solo tú (admin logueado) puedes verlo.</p>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <div class="bg-white rounded-2xl shadow-sm border <?= $maint_on ? 'border-red-200' : 'border-gray-100' ?> overflow-hidden">
+      <div class="<?= $maint_on ? 'bg-gradient-to-r from-red-600 to-rose-700' : 'bg-gradient-to-r from-[#1E3A8A] to-[#0056D6]' ?> px-6 py-4">
+        <h2 class="text-white font-black text-base">Modo Mantenimiento</h2>
+        <p class="text-white/70 text-xs mt-0.5">Al activarlo, el sitio público muestra una página de mantenimiento. Tú (admin) sigues viendo el sitio normal.</p>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between p-5 rounded-2xl border-2 <?= $maint_on ? 'border-red-200 bg-red-50' : 'border-gray-100 bg-gray-50' ?>">
+          <div>
+            <p class="font-black text-gray-800 text-sm">Activar página de mantenimiento</p>
+            <p class="text-xs text-gray-400 mt-0.5">
+              <?= $maint_on ? '🔴 Activo — el sitio público está en mantenimiento' : '🟢 Inactivo — el sitio público es visible' ?>
+            </p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+            <input type="checkbox" name="maintenance_active" value="1"
+                   class="sr-only peer" <?= $maint_on ? 'checked' : '' ?>>
+            <div class="w-14 h-7 bg-gray-200 peer-focus:ring-2 peer-focus:ring-red-300 rounded-full peer
+                        peer-checked:bg-red-500 transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-6 h-6 bg-white rounded-full shadow
+                        transition-transform peer-checked:translate-x-7"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Logo de la página de mantenimiento ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-700 to-indigo-900 px-6 py-4">
+        <h2 class="text-white font-black text-base">Logo de la página</h2>
+        <p class="text-indigo-200 text-xs mt-0.5">Logo que aparece en la parte superior de la pantalla de mantenimiento.</p>
+      </div>
+      <div class="p-6">
+        <div x-data="{ url: '<?= cpag_val($config, 'maint_logo', cfg_value($config, 'site_header_logo', '/assets/img/logos/logorp.webp')) ?>' }">
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">URL del logo</label>
+          <div class="flex gap-2 mb-3">
+            <input name="maint_logo" x-model="url"
+                   placeholder="Usa el logo principal del sitio si está vacío"
+                   class="min-w-0 flex-1 border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <button type="button"
+                    @click="openMediaPicker((picked) => { url = picked }, 'image')"
+                    class="px-4 py-2 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-100 hover:bg-indigo-100 transition-colors flex-shrink-0">
+              Media
+            </button>
+          </div>
+          <!-- Preview -->
+          <div class="flex items-center gap-4 p-4 bg-[#0f2057] rounded-xl">
+            <template x-if="url && url !== ''">
+              <img :src="url.match(/^https?:\/\//) ? url : '<?= BASE_URL ?>/' + url.replace(/^\/+/,'')"
+                   class="h-12 object-contain" alt="Preview logo">
+            </template>
+            <template x-if="!url || url === ''">
+              <?php
+              $default_logo_val = cfg_value($config,'site_header_logo','/assets/img/logos/logorp.webp');
+              $default_logo_url = preg_match('#^https?://#',$default_logo_val) ? $default_logo_val : BASE_URL.'/'.ltrim($default_logo_val,'/');
+              ?>
+              <img src="<?= htmlspecialchars($default_logo_url) ?>"
+                   class="h-12 object-contain opacity-60" alt="Logo por defecto">
+            </template>
+            <p class="text-white/50 text-xs">Vista previa sobre fondo oscuro</p>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">Si lo dejas vacío, se usa el logo principal del sitio.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Contador regresivo de lanzamiento ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-[#1E3A8A] to-[#0056D6] px-6 py-4">
+        <h2 class="text-white font-black text-base">Contador de lanzamiento</h2>
+        <p class="text-blue-200 text-xs mt-0.5">Muestra un contador regresivo hasta la fecha de lanzamiento del sitio.</p>
+      </div>
+      <div class="p-6 space-y-5">
+
+        <!-- Toggle ON/OFF -->
+        <div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50">
+          <div>
+            <p class="text-sm font-black text-gray-800">Mostrar contador de lanzamiento</p>
+            <p class="text-xs text-gray-400 mt-0.5">Aparece entre el engranaje y el título principal.</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="maint_countdown_active" value="1" class="sr-only peer"
+                   <?= cfg_value($config, 'maint_countdown_active', '0') === '1' ? 'checked' : '' ?>>
+            <div class="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer
+                        peer-checked:bg-[#1E3A8A] transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow
+                        transition-transform peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+
+        <!-- Fecha de lanzamiento -->
+        <div>
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Fecha de lanzamiento</label>
+          <input type="date" name="maint_launch_date"
+                 value="<?= cpag_val($config, 'maint_launch_date', '') ?>"
+                 class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <p class="text-xs text-gray-400 mt-1">El contador llega a cero a la medianoche de este día (hora de Lima).</p>
+        </div>
+
+        <!-- Etiqueta -->
+        <div>
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Etiqueta del contador</label>
+          <input type="text" name="maint_launch_label"
+                 value="<?= cpag_val($config, 'maint_launch_label', 'Lanzamiento oficial') ?>"
+                 maxlength="60" placeholder="Lanzamiento oficial"
+                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <p class="text-xs text-gray-400 mt-1">Texto que aparece encima de los dígitos del contador.</p>
+        </div>
+
+        <!-- Preview estático -->
+        <div class="rounded-2xl bg-[#0B1E4A] p-5">
+          <p class="text-white/40 text-[10px] uppercase tracking-widest mb-3 font-semibold">Preview estático</p>
+          <p class="text-white/60 text-xs font-semibold mb-3">Lanzamiento oficial</p>
+          <div class="flex items-center gap-2">
+            <?php foreach ([['124','Días'],['09','Hrs'],['53','Min'],['30','Seg']] as [$n, $u]): ?>
+            <div class="flex flex-col items-center">
+              <div class="bg-[#0B1E4A]/80 border border-white/15 rounded-xl px-3 py-2 min-w-[3.2rem] text-center shadow-lg"
+                   style="font-family:'DS-Digital',monospace">
+                <span class="block text-2xl font-black text-white tabular-nums"><?= $n ?></span>
+              </div>
+              <span class="text-white/40 text-[10px] uppercase tracking-widest mt-1"><?= $u ?></span>
+            </div>
+            <?php if ($u !== 'Seg'): ?><span class="text-white/30 text-2xl font-black mb-4">:</span><?php endif; ?>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Personalizar texto ── -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-slate-700 to-slate-900 px-6 py-4">
+        <h2 class="text-white font-black text-base">Personalizar página</h2>
+        <p class="text-slate-300 text-xs mt-0.5">Configura el texto que verán los visitantes.</p>
+      </div>
+      <div class="p-6 space-y-5">
+        <div>
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Título principal</label>
+          <input type="text" name="maint_title"
+                 value="<?= cpag_val($config, 'maint_title', 'Sitio en Mantenimiento') ?>"
+                 maxlength="80" placeholder="Sitio en Mantenimiento"
+                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+        </div>
+        <div>
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Mensaje / subtítulo</label>
+          <textarea name="maint_message" rows="3" maxlength="300"
+                    placeholder="Estamos trabajando para mejorar tu experiencia. Volvemos pronto."
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] resize-none"><?= cpag_val($config, 'maint_message', 'Estamos trabajando para mejorar tu experiencia. Volvemos pronto.') ?></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-gray-500 uppercase tracking-wide mb-1.5">Tiempo estimado <span class="font-normal normal-case text-gray-400">(opcional)</span></label>
+          <input type="text" name="maint_eta"
+                 value="<?= cpag_val($config, 'maint_eta', '') ?>"
+                 maxlength="80" placeholder="Ej: Volvemos hoy a las 6:00 PM"
+                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+          <p class="text-xs text-gray-400 mt-1">Si lo dejas vacío, no se muestra el bloque de tiempo.</p>
+        </div>
+        <div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-gray-50">
+          <div>
+            <p class="text-sm font-black text-gray-800">Mostrar redes sociales</p>
+            <p class="text-xs text-gray-400 mt-0.5">Facebook, Instagram, YouTube y TikTok del sitio.</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" name="maint_show_social" value="1" class="sr-only peer"
+                   <?= cfg_value($config, 'maint_show_social', '1') === '1' ? 'checked' : '' ?>>
+            <div class="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer
+                        peer-checked:bg-[#1E3A8A] transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow
+                        transition-transform peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 rounded-2xl border border-slate-700 px-6 py-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="text-white font-black text-sm">Vista previa de la página</p>
+        <p class="text-slate-400 text-xs mt-0.5">Abre la página de mantenimiento en nueva pestaña.</p>
+      </div>
+      <a href="<?= BASE_URL ?>/maintenance.php" target="_blank"
+         class="flex-shrink-0 inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors border border-white/20">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+        Ver preview
+      </a>
+    </div>
+
+    <div class="sticky bottom-0 bg-[#F1F5F9]/95 backdrop-blur py-4 flex justify-end gap-3">
+      <a href="<?= BASE_URL ?>/maintenance.php" target="_blank"
+         class="bg-white border border-gray-200 text-gray-600 font-bold px-5 py-3 rounded-xl text-sm">Ver preview</a>
+      <button type="submit"
+              class="<?= $maint_on ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-[#FACC15] hover:bg-yellow-400 text-[#1E3A8A]' ?> font-black px-8 py-3 rounded-xl text-sm shadow">
+        <?= $maint_on ? 'Guardar / Desactivar' : 'Guardar / Activar' ?>
+      </button>
+    </div>
+  </form>
+  </div><!-- /x-show mantenimiento -->
+
+</div><!-- /x-data activeTab -->
 
 <script>
 // Preview en vivo de colores (igual que config-index.php)

@@ -4,6 +4,10 @@
 // URL: /pagina.php?slug=mi-pagina
 // ============================================================
 require_once __DIR__ . '/includes/config/db.php';
+require_once __DIR__ . '/includes/helpers/config.php';
+$cfg_camp = [];
+try { $cfg_camp = $pdo->query("SELECT clave, valor FROM configuracion")->fetchAll(PDO::FETCH_KEY_PAIR); } catch(Exception $e){}
+require_once __DIR__ . '/includes/maintenance_check.php';
 
 $slug   = trim($_GET['slug'] ?? '');
 $pagina = null;

@@ -10,6 +10,7 @@ try {
     $cfg_camp = $pdo->query("SELECT clave, valor FROM configuracion")
                     ->fetchAll(PDO::FETCH_KEY_PAIR);
 } catch (Exception $e) {}
+require_once __DIR__ . '/includes/maintenance_check.php';
 
 // ── Página desactivada por admin ─────────────────────────────
 $page_activa = cfg_value($cfg_camp, 'material_page_active', '1') !== '0';

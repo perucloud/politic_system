@@ -27,6 +27,7 @@ try {
     $cfg_camp = $pdo->query("SELECT clave, valor FROM configuracion")
                     ->fetchAll(PDO::FETCH_KEY_PAIR);
 } catch (Exception $e) {}
+require_once __DIR__ . '/includes/maintenance_check.php';
 $camp_tipo        = $cfg_camp['tipo_candidatura']    ?? 'provincial';
 $camp_cargo       = $cfg_camp['nombre_cargo']        ?? 'Alcalde Provincial';
 $camp_territorio  = $cfg_camp['nombre_territorio']   ?? 'Satipo';

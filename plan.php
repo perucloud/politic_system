@@ -6,6 +6,7 @@ $cfg_camp = [];
 try {
     $cfg_camp = $pdo->query("SELECT clave, valor FROM configuracion")->fetchAll(PDO::FETCH_KEY_PAIR);
 } catch (Exception $e) {}
+require_once __DIR__ . '/includes/maintenance_check.php';
 
 $work_axes = array_values(array_filter(
     cfg_json($cfg_camp, 'index_work_axes', cfg_default_work_axes()),

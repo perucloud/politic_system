@@ -5,6 +5,12 @@
 // ============================================================
 if (ob_get_level() === 0) ob_start();
 if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Prevenir que LiteSpeed u otros proxies cacheen páginas del admin
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+
 require_once __DIR__ . '/../includes/config/db.php';
 require_once __DIR__ . '/config/auth.php';
 

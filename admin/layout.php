@@ -21,84 +21,84 @@ $admin_rol    = get_rol();
 $page_title   = $page_title ?? 'Panel Admin';
 $current      = basename($_SERVER['PHP_SELF']);
 
-// -- Iconos reutilizables -----------------------------------
-$ic_list  = 'M4 6h16M4 10h16M4 14h16M4 18h7';
-$ic_plus  = 'M12 4v16m8-8H4';
-$ic_pdf   = 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z';
-$ic_excel = 'M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z';
-$ic_eye   = 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z';
-$ic_tag   = 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z';
+// -- Iconos reutilizables (Tabler Icons) --------------------
+$ic_list  = 'ti-list';
+$ic_plus  = 'ti-plus';
+$ic_pdf   = 'ti-file-type-pdf';
+$ic_excel = 'ti-file-type-xls';
+$ic_eye   = 'ti-eye';
+$ic_tag   = 'ti-tag';
 
 // -- Menu por secciones con submenus -----------------------
 $secciones = [
   [
     'titulo' => 'PRINCIPAL',
     'items'  => [
-      ['id'=>'dashboard','href'=>'dashboard.php','icon'=>'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6','label'=>'Dashboard','rol'=>'editor','modulo'=>null,'solo_rol'=>null,'submenu'=>null],
-      ['id'=>'mi_distrito','href'=>'mi-distrito.php','icon'=>'M3 21h18M6 21V8l6-5 6 5v13M9 21v-6h6v6','label'=>'Mi Distrito','rol'=>'candidato_distrital','modulo'=>null,'solo_rol'=>'candidato_distrital','submenu'=>null],
+      ['id'=>'dashboard','href'=>'dashboard.php','icon'=>'ti-layout-dashboard','label'=>'Dashboard','rol'=>'editor','modulo'=>null,'solo_rol'=>null,'submenu'=>null],
+      ['id'=>'mi_distrito','href'=>'mi-distrito.php','icon'=>'ti-map-pin','label'=>'Mi Distrito','rol'=>'candidato_distrital','modulo'=>null,'solo_rol'=>'candidato_distrital','submenu'=>null],
     ],
   ],
   [
     'titulo' => 'CONTENIDO',
     'items'  => [
-      ['id'=>'candidatos','href'=>'candidatos-distritales.php','icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z','label'=>'Candidatos','rol'=>'editor','modulo'=>'candidatos_distritales','solo_rol'=>null,
+      ['id'=>'candidatos','href'=>'candidatos-distritales.php','icon'=>'ti-user-star','label'=>'Candidatos','rol'=>'editor','modulo'=>'candidatos_distritales','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'candidatos-distritales.php','label'=>'Ver todos','icon'=>$ic_list],
           ['href'=>'candidato-nuevo.php',       'label'=>'Nuevo Distrito','icon'=>$ic_plus],
         ]
       ],
-      ['id'=>'noticias','href'=>'noticias.php','icon'=>'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6m-6 4h6','label'=>'Noticias','rol'=>'editor','modulo'=>'noticias','solo_rol'=>null,
+      ['id'=>'noticias','href'=>'noticias.php','icon'=>'ti-news','label'=>'Noticias','rol'=>'editor','modulo'=>'noticias','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'noticias.php',            'label'=>'Todas las noticias','icon'=>$ic_list],
           ['href'=>'noticia-form.php',         'label'=>'Nueva Noticia',     'icon'=>$ic_plus],
           ['href'=>'categorias-noticias.php',  'label'=>'Categorias',        'icon'=>$ic_tag],
         ]
       ],
-      ['id'=>'actividades','href'=>'actividades.php','icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z','label'=>'Calendario','rol'=>'editor','modulo'=>'actividades','solo_rol'=>null,
+      ['id'=>'actividades','href'=>'actividades.php','icon'=>'ti-calendar-event','label'=>'Calendario','rol'=>'editor','modulo'=>'actividades','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'actividades.php',     'label'=>'Todas las actividades','icon'=>$ic_list],
           ['href'=>'actividad-form.php',  'label'=>'Nueva Actividad',      'icon'=>$ic_plus],
         ]
       ],
-      ['id'=>'paginas','href'=>'paginas.php','icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','label'=>'Paginas','rol'=>'editor','modulo'=>'paginas','solo_rol'=>null,
+      ['id'=>'paginas','href'=>'paginas.php','icon'=>'ti-file-text','label'=>'Paginas','rol'=>'editor','modulo'=>'paginas','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'paginas.php',    'label'=>'Todas las paginas','icon'=>$ic_list],
           ['href'=>'pagina-form.php','label'=>'Nueva Pagina',     'icon'=>$ic_plus],
         ]
       ],
-      ['id'=>'media','href'=>'media.php','icon'=>'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z','label'=>'Archivos y Media','rol'=>'editor','modulo'=>'media','solo_rol'=>null,'submenu'=>null],
+      ['id'=>'media','href'=>'media.php','icon'=>'ti-photo','label'=>'Archivos y Media','rol'=>'editor','modulo'=>'media','solo_rol'=>null,'submenu'=>null],
     ],
   ],
   [
     'titulo' => 'PARTIDO POLITICO',
     'items'  => [
-      ['id'=>'simpatizantes','href'=>'simpatizantes.php','icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','label'=>'Simpatizantes','rol'=>'editor','modulo'=>'simpatizantes','solo_rol'=>null,
+      ['id'=>'simpatizantes','href'=>'simpatizantes.php','icon'=>'ti-users-group','label'=>'Simpatizantes','rol'=>'editor','modulo'=>'simpatizantes','solo_rol'=>null,
         'submenu'=>[
           ['href'=>'simpatizantes.php',          'label'=>'Ver registros',  'icon'=>$ic_list],
           ['href'=>'exportar-pdf.php',           'label'=>'Exportar PDF',   'icon'=>$ic_pdf, 'target'=>'_blank'],
           ['href'=>'simpatizantes.php?export=excel','label'=>'Exportar Excel','icon'=>$ic_excel],
         ]
       ],
-      ['id'=>'militantes','href'=>'militantes.php','icon'=>'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z','label'=>'Militantes','rol'=>'editor','modulo'=>'militantes','solo_rol'=>null,'submenu'=>null],
-      ['id'=>'personeros','href'=>'personeros.php','icon'=>'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2','label'=>'Personeros','rol'=>'editor','modulo'=>null,'solo_rol'=>null,'submenu'=>null],
-      ['id'=>'config_plan','href'=>'config-plan.php','icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','label'=>'Plan de Gobierno','rol'=>'admin','modulo'=>'configuracion_global','solo_rol'=>null,'submenu'=>null],
-      ['id'=>'material_pub','href'=>'material-publicitario.php','icon'=>'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z','label'=>'Material Publicitario','rol'=>'editor','modulo'=>'material_publicitario','solo_rol'=>null,'submenu'=>null],
+      ['id'=>'militantes','href'=>'militantes.php','icon'=>'ti-shield-check','label'=>'Militantes','rol'=>'editor','modulo'=>'militantes','solo_rol'=>null,'submenu'=>null],
+      ['id'=>'personeros','href'=>'personeros.php','icon'=>'ti-id-badge-2','label'=>'Personeros','rol'=>'editor','modulo'=>null,'solo_rol'=>null,'submenu'=>null],
+      ['id'=>'config_plan','href'=>'config-plan.php','icon'=>'ti-file-certificate','label'=>'Plan de Gobierno','rol'=>'admin','modulo'=>'configuracion_global','solo_rol'=>null,'submenu'=>null],
+      ['id'=>'material_pub','href'=>'material-publicitario.php','icon'=>'ti-photo-scan','label'=>'Material Publicitario','rol'=>'editor','modulo'=>'material_publicitario','solo_rol'=>null,'submenu'=>null],
     ],
   ],
   [
     'titulo' => 'CONFIGURACION',
     'items'  => [
-      ['id'=>'configurar','href'=>'#','icon'=>'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z','label'=>'Configurar','rol'=>'admin','modulo'=>'configuracion_global','solo_rol'=>null,
+      ['id'=>'configurar','href'=>'#','icon'=>'ti-adjustments-horizontal','label'=>'Configurar','rol'=>'admin','modulo'=>'configuracion_global','solo_rol'=>null,
         'submenu'=>[
-          ['href'=>'menu-manager.php',       'label'=>'Menu Web',          'icon'=>'M4 6h16M4 12h16M4 18h16',                                                                                                                                                                                                                                                                                               'rol'=>'admin',      'modulo'=>'menu_web',              'solo_rol'=>null],
-          ['href'=>'config-pagina.php',       'label'=>'Configurar Pagina', 'icon'=>'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z', 'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
-          ['href'=>'config-index.php',        'label'=>'Configurar Index',  'icon'=>'M3 4a1 1 0 011-1h16a1 1 0 011 1v5H3V4zm0 7h8v10H4a1 1 0 01-1-1v-9zm10 10V11h8v9a1 1 0 01-1 1h-7z',                                                                                                                                                                                                                    'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
-          ['href'=>'seo.php',                 'label'=>'SEO por Pagina',    'icon'=>'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',                                                                                                                                                                                                                                                                           'rol'=>'admin',      'modulo'=>'seo',                   'solo_rol'=>null],
-          ['href'=>'tools/migrate-webp.php',  'label'=>'Migrar a WebP',     'icon'=>'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',                                                                                                                                                          'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
-          ['href'=>'auditoria.php',           'label'=>'Auditoria',         'icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',                                                                                                                                                    'rol'=>'admin',      'modulo'=>'auditoria',             'solo_rol'=>null],
-          ['href'=>'usuarios.php',            'label'=>'Usuarios',          'icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',                                                                                                                                                                                                      'rol'=>'superadmin', 'modulo'=>'usuarios',             'solo_rol'=>null],
-          ['href'=>'editores.php',            'label'=>'Gestionar Editores','icon'=>'M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z',                                                                                                                                                                                                                               'rol'=>'admin',      'modulo'=>'usuarios',              'solo_rol'=>'admin'],
-          ['href'=>'backup.php',              'label'=>'Backup',            'icon'=>'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10',                                                                                                                                                                                                                                            'rol'=>'admin',      'modulo'=>'configuracion_global',  'solo_rol'=>null],
+          ['href'=>'menu-manager.php',       'label'=>'Menu Web',          'icon'=>'ti-sitemap',                  'rol'=>'admin',      'modulo'=>'menu_web',             'solo_rol'=>null],
+          ['href'=>'config-pagina.php',      'label'=>'Configurar Pagina', 'icon'=>'ti-settings-2',               'rol'=>'admin',      'modulo'=>'configuracion_global', 'solo_rol'=>null],
+          ['href'=>'config-index.php',       'label'=>'Configurar Index',  'icon'=>'ti-layout',                   'rol'=>'admin',      'modulo'=>'configuracion_global', 'solo_rol'=>null],
+          ['href'=>'seo.php',                'label'=>'SEO por Pagina',    'icon'=>'ti-search',                   'rol'=>'admin',      'modulo'=>'seo',                  'solo_rol'=>null],
+          ['href'=>'tools/migrate-webp.php', 'label'=>'Migrar a WebP',     'icon'=>'ti-photo-bolt',               'rol'=>'admin',      'modulo'=>'configuracion_global', 'solo_rol'=>null],
+          ['href'=>'auditoria.php',          'label'=>'Auditoria',         'icon'=>'ti-activity',                 'rol'=>'admin',      'modulo'=>'auditoria',            'solo_rol'=>null],
+          ['href'=>'usuarios.php',           'label'=>'Usuarios',          'icon'=>'ti-users',                    'rol'=>'superadmin', 'modulo'=>'usuarios',             'solo_rol'=>null],
+          ['href'=>'editores.php',           'label'=>'Gestionar Editores','icon'=>'ti-user-plus',                'rol'=>'admin',      'modulo'=>'usuarios',             'solo_rol'=>'admin'],
+          ['href'=>'backup.php',             'label'=>'Backup',            'icon'=>'ti-cloud-upload',             'rol'=>'admin',      'modulo'=>'configuracion_global', 'solo_rol'=>null],
         ]
       ],
     ],
@@ -158,6 +158,7 @@ $flyout_json = json_encode($flyout_data, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
   ?>
   <link rel="icon" href="<?= htmlspecialchars($favicon_href) ?>">
   <link rel="apple-touch-icon" href="<?= htmlspecialchars($favicon_href) ?>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{primary:'#1E3A8A',secondary:'#38BDF8',accent:'#FACC15'}}}}</script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -359,10 +360,7 @@ $flyout_json = json_encode($flyout_data, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
                  class="nav-item flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm
                         text-blue-200 hover:text-white group
                         <?= $is_active ? 'nav-active' : '' ?>">
-                <svg class="w-4 h-4 flex-shrink-0 opacity-80 group-hover:opacity-100"
-                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="<?= $item['icon'] ?>"/>
-                </svg>
+                <i class="ti <?= htmlspecialchars($item['icon']) ?> text-base flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"></i>
                 <span class="truncate flex-1"><?= $item['label'] ?></span>
                 <?php if ($has_sub): ?>
                 <svg class="w-3 h-3 flex-shrink-0 opacity-40 group-hover:opacity-80 transition-all"
@@ -473,9 +471,7 @@ $flyout_json = json_encode($flyout_data, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
       <!-- Header del flyout -->
       <div class="px-4 py-3 bg-gradient-to-r from-[#0F2057] to-[#1E3A8A] flex items-center gap-2.5">
         <template x-if="currentSub">
-          <svg class="w-4 h-4 text-[#FACC15] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" :d="currentSub?.icon ?? ''"/>
-          </svg>
+          <i :class="'ti ' + (currentSub?.icon ?? '') + ' text-base text-[#FACC15] flex-shrink-0'"></i>
         </template>
         <span class="text-white font-black text-sm" x-text="currentSub?.title ?? ''"></span>
       </div>
@@ -487,10 +483,7 @@ $flyout_json = json_encode($flyout_data, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
              :target="sub.target ?? '_self'"
              class="flex items-center gap-3 mx-2 px-3 py-2.5 text-sm text-gray-600 font-medium rounded-xl
                     hover:bg-[#1E3A8A] hover:text-white hover:scale-[1.02] transition-all duration-150 group">
-            <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400 group-hover:text-[#FACC15] transition-colors"
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" :d="sub.icon"/>
-            </svg>
+            <i :class="'ti ' + sub.icon + ' text-sm flex-shrink-0 text-gray-400 group-hover:text-[#FACC15] transition-colors'"></i>
             <span x-text="sub.label"></span>
           </a>
         </template>

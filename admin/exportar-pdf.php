@@ -20,6 +20,13 @@ try {
 $total = count($simpatizantes);
 $fecha_generado = date('d/m/Y H:i');
 
+// ── Nombre del partido desde configuracion ───────────────────
+$partido_nombre = 'ALIANZA PARA EL PROGRESO';
+try {
+    $v = $pdo->query("SELECT valor FROM configuracion WHERE clave='partido_nombre' LIMIT 1")->fetchColumn();
+    if ($v) $partido_nombre = strtoupper($v);
+} catch (Exception $e) {}
+
 // ── Resumen por distrito ─────────────────────────────────────
 $por_distrito = [];
 foreach ($simpatizantes as $r) {
@@ -424,7 +431,7 @@ function val(string|null $v): string {
   <div class="doc-header">
     <div class="logo-area">
       <div class="logo-name">Ivan Cisneros</div>
-      <div class="logo-partido">Renovación Popular</div>
+      <div class="logo-partido"><?= htmlspecialchars($partido_nombre) ?></div>
       <div class="logo-accent"></div>
     </div>
     <div class="doc-meta">
